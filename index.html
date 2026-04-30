@@ -190,7 +190,7 @@
             flex: 1;
             gap: 60px;
             padding: 60px 0;
-            transition: transform 0.15s ease-out;
+            will-change: transform;
         }
 
         .heroContent {
@@ -686,6 +686,7 @@
         let isMuted = false;
         let isAudioEnabled = false;
         let currentBpm = 155;
+        let lastBeatTime = 0;
 
         function setupAudioContext() {
             if (audioCtx) return;
@@ -742,15 +743,13 @@
         }
 
         function updateZoom() {
-            const beatDuration = 60 / currentBpm;
-            const currentTime = audioElement.currentTime;
-            const timeSinceBeat = currentTime % beatDuration;
-            const beatProgress = timeSinceBeat / beatDuration;
+            const beatDurationMs = (60 / currentBpm) * 1000;
+            const currentTimeMs = audioElement.currentTime * 1000;
+            const timeSinceBeat = currentTimeMs % beatDurationMs;
+            const beatProgress = timeSinceBeat / beatDurationMs;
 
-            const zoomIn = Math.max(0, Math.cos(beatProgress * Math.PI));
-            const scale = 1 + (zoomIn * 0.08);
-
-            heroSection.style.transform = `scale(${scale})`;
+            const zoomAmount = 1 + Math.sin(beatProgress * Math.PI) * 0.12;
+            heroSection.style.transform = `scale(${zoomAmount})`;
         }
 
         function drawVisualizer() {
