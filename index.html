@@ -21,17 +21,73 @@
             overflow-x: hidden;
         }
 
-        #audioVisualizer {
+        .audioPrompt {
             position: fixed;
             width: 100%;
             height: 100%;
             top: 0;
             left: 0;
-            z-index: 0;
-            pointer-events: none;
+            z-index: 999;
+            background: rgba(10, 10, 10, 0.95);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 40px;
         }
 
-        svg {
+        .audioPrompt.hidden {
+            display: none;
+        }
+
+        .promptTitle {
+            font-size: 48px;
+            font-weight: 700;
+            color: #fff;
+            text-align: center;
+            letter-spacing: 2px;
+        }
+
+        .promptButtons {
+            display: flex;
+            gap: 30px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .promptBtn {
+            padding: 16px 48px;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid white;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .enableBtn {
+            background: white;
+            color: black;
+        }
+
+        .enableBtn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(255, 255, 255, 0.3);
+        }
+
+        .disableBtn {
+            background: black;
+            color: white;
+        }
+
+        .disableBtn:hover {
+            background: white;
+            color: black;
+        }
+
+        #audioVisualizer {
             position: fixed;
             width: 100%;
             height: 100%;
@@ -50,7 +106,7 @@
             display: flex;
             flex-direction: column;
             min-height: 100vh;
-            transition: transform 0.1s ease-out;
+            transition: transform 0.05s ease-out;
         }
 
         header {
@@ -484,6 +540,15 @@
                 right: 20px;
                 font-size: 22px;
             }
+
+            .promptTitle {
+                font-size: 32px;
+            }
+
+            .promptBtn {
+                padding: 12px 32px;
+                font-size: 16px;
+            }
         }
 
         @keyframes slideDown {
@@ -521,11 +586,19 @@
     </style>
 </head>
 <body>
+    <div class="audioPrompt" id="audioPrompt">
+        <div class="promptTitle">enable audio</div>
+        <div class="promptButtons">
+            <button class="promptBtn enableBtn" id="enableAudioBtn">Enable audio!</button>
+            <button class="promptBtn disableBtn" id="disableAudioBtn">I don't want audio.</button>
+        </div>
+    </div>
+
     <canvas id="audioVisualizer"></canvas>
 
     <button class="muteBtn" id="muteBtn" title="Mute/Unmute">🔊</button>
 
-    <audio id="audio" loop>
+    <audio id="audio" crossorigin="anonymous">
         <source src="" type="audio/mpeg">
     </audio>
 
@@ -590,10 +663,11 @@
 
     <script>
         let isAudioMuted = false;
+        let audioEnabled = false;
 
         const playlist = [
-            'https://files.catbox.moe/v6tq1e.mp3',
-            'https://files.catbox.moe/qm1jkq.mp3'
+            { url: 'https://files.catbox.moe/v6tq1e.mp3', bpm: 155 },
+            { url: 'https://files.catbox.moe/qm1jkq.mp3', bpm: 141 }
         ];
 
         let currentTrack = 0;
@@ -602,16 +676,20 @@
         const mainContainer = document.getElementById('mainContainer');
         const canvas = document.getElementById('audioVisualizer');
         const canvasCtx = canvas.getContext('2d');
+        const audioPrompt = document.getElementById('audioPrompt');
+        const enableAudioBtn = document.getElementById('enableAudioBtn');
+        const disableAudioBtn = document.getElementById('disableAudioBtn');
 
         let audioCtx;
         let analyser;
         let dataArray;
+        let currentBPM = 155;
 
         function initAudioContext() {
             if (!audioCtx) {
                 audioCtx = new (window.AudioContext || window.webkitAudioContext)();
                 analyser = audioCtx.createAnalyser();
-                analyser.fftSize = 256;
+                analyser.fftSize = 512;
                 const bufferLength = analyser.frequencyBinCount;
                 dataArray = new Uint8Array(bufferLength);
 
@@ -631,7 +709,7 @@
 
             analyser.getByteFrequencyData(dataArray);
 
-            canvasCtx.fillStyle = 'rgba(10, 10, 10, 0.2)';
+            canvasCtx.fillStyle = 'rgba(10, 10, 10, 0.15)';
             canvasCtx.fillRect(0, 0, canvas.width, canvas.height);
 
             const barWidth = (canvas.width / dataArray.length) * 2.5;
@@ -639,7 +717,7 @@
             let x = 0;
 
             for (let i = 0; i < dataArray.length; i++) {
-                barHeight = (dataArray[i] / 255) * canvas.height * 0.7;
+                barHeight = (dataArray[i] / 255) * canvas.height;
 
                 const hue = (i / dataArray.length) * 360;
                 canvasCtx.fillStyle = `hsl(${hue}, 100%, 50%)`;
@@ -651,13 +729,41 @@
             requestAnimationFrame(drawVisualizer);
         }
 
+        function getAverageFrequency() {
+            if (!dataArray) return 0;
+            let sum = 0;
+            for (let i = 0; i < dataArray.length; i++) {
+                sum += dataArray[i];
+            }
+            return sum / dataArray.length;
+        }
+
+        function updateBeatZoom() {
+            const beatInterval = (60 / currentBPM) * 1000;
+            const beatPosition = (audioElement.currentTime * 1000) % beatInterval;
+            const beatPhase = beatPosition / beatInterval;
+
+            const avgFreq = getAverageFrequency();
+            const freqMultiplier = (avgFreq / 255) * 0.03;
+
+            const zoomAmount = 1 + Math.sin(beatPhase * Math.PI * 2) * 0.06 + freqMultiplier;
+            mainContainer.style.transform = `scale(${zoomAmount})`;
+        }
+
+        function animateZoom() {
+            updateBeatZoom();
+            requestAnimationFrame(animateZoom);
+        }
+
         function setupAudio() {
-            audioElement.src = playlist[currentTrack];
+            const currentSong = playlist[currentTrack];
+            audioElement.src = currentSong.url;
+            currentBPM = currentSong.bpm;
 
             audioElement.addEventListener('ended', () => {
                 currentTrack = (currentTrack + 1) % playlist.length;
-                audioElement.src = playlist[currentTrack];
-                if (!isAudioMuted) {
+                setupAudio();
+                if (!isAudioMuted && audioEnabled) {
                     audioElement.play();
                 }
             });
@@ -671,31 +777,37 @@
                 muteButton.textContent = '🔇';
                 muteButton.classList.add('muted');
             } else {
-                initAudioContext();
                 audioElement.play();
                 muteButton.textContent = '🔊';
                 muteButton.classList.remove('muted');
             }
         }
 
+        enableAudioBtn.addEventListener('click', () => {
+            audioEnabled = true;
+            audioPrompt.classList.add('hidden');
+            initAudioContext();
+            setupAudio();
+            audioElement.play();
+            drawVisualizer();
+            animateZoom();
+        });
+
+        disableAudioBtn.addEventListener('click', () => {
+            audioEnabled = false;
+            audioPrompt.classList.add('hidden');
+            muteButton.style.display = 'none';
+        });
+
         muteButton.addEventListener('click', toggleAudioMute);
 
         window.addEventListener('load', () => {
             resizeCanvas();
-            setupAudio();
-            drawVisualizer();
         });
 
         window.addEventListener('resize', () => {
             resizeCanvas();
         });
-
-        document.addEventListener('click', () => {
-            if (audioElement.paused && !isAudioMuted) {
-                initAudioContext();
-                audioElement.play();
-            }
-        }, { once: true });
     </script>
 </body>
 </html>
