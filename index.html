@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>star</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -12,20 +15,24 @@
         }
 
         body {
-            font-family: 'Courier New', monospace;
+            font-family: 'Geist', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background: #0a0a0a;
             color: #e0e0e0;
             min-height: 100vh;
-            overflow-x: hidden;
+            overflow: hidden;
         }
 
         .page {
             width: 100%;
-            min-height: 100vh;
+            height: 100vh;
             display: flex;
+            align-items: center;
+            justify-content: center;
+            position: fixed;
+            top: 0;
+            left: 0;
             opacity: 0;
             pointer-events: none;
-            transition: opacity 0.6s ease;
         }
 
         .page.active {
@@ -33,21 +40,19 @@
             pointer-events: auto;
         }
 
-        /* HOME PAGE */
         .home-page {
-            align-items: center;
-            justify-content: center;
-            padding: 40px;
+            flex-direction: column;
         }
 
         .intro-container {
             text-align: center;
-            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 1s cubic-bezier(0.25, 0.46, 0.45, 0.94);
         }
 
         .intro-container.move {
-            transform: translateY(-200px) translateX(-300px);
-            text-align: left;
+            transform: translateY(-120px);
+            opacity: 0.7;
+            filter: blur(8px);
         }
 
         .hello {
@@ -55,35 +60,36 @@
             font-style: italic;
             font-weight: 300;
             color: #fff;
-            letter-spacing: 2px;
-            min-height: 140px;
+            letter-spacing: -2px;
+            min-height: 150px;
             display: flex;
             align-items: center;
             justify-content: center;
         }
 
-        .intro-container.move .hello {
-            justify-content: flex-start;
-            font-size: 80px;
-            min-height: auto;
+        .hello-char {
+            opacity: 0;
+            animation: typeWrite 0.08s ease-out forwards;
+        }
+
+        @keyframes typeWrite {
+            to {
+                opacity: 1;
+            }
         }
 
         .intro {
             display: flex;
             align-items: center;
-            gap: 15px;
-            margin-top: 40px;
+            gap: 12px;
+            margin-top: 20px;
             justify-content: center;
             opacity: 0;
-            animation: slideIn 0.8s ease-out 1.5s forwards;
-        }
-
-        .intro-container.move .intro {
-            justify-content: flex-start;
+            animation: slideIn 0.8s ease-out 1.8s forwards;
         }
 
         .intro-text {
-            font-size: 28px;
+            font-size: 20px;
             color: #d1d5db;
             font-weight: 400;
         }
@@ -94,9 +100,8 @@
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            font-size: 28px;
+            font-size: 20px;
             font-weight: 600;
-            display: inline-block;
         }
 
         .sparkles {
@@ -110,32 +115,28 @@
 
         .sparkle {
             position: absolute;
-            width: 6px;
-            height: 6px;
+            width: 3px;
+            height: 3px;
             background: #fbbf24;
             border-radius: 50%;
-            box-shadow: 0 0 6px #fbbf24;
-            opacity: 0;
+            animation: sparkleAnim 2s ease-in-out infinite;
         }
 
-        @keyframes sparklePopIn {
-            0% {
+        @keyframes sparkleAnim {
+            0%, 100% { 
                 opacity: 0;
-                transform: scale(0) translate(-50%, -50%);
+                transform: scale(0);
             }
-            50% {
+            50% { 
                 opacity: 1;
-            }
-            100% {
-                opacity: 0;
-                transform: scale(0.5) translate(-50%, -50%);
+                transform: scale(1);
             }
         }
 
         @keyframes slideIn {
             from {
                 opacity: 0;
-                transform: translateY(20px);
+                transform: translateY(10px);
             }
             to {
                 opacity: 1;
@@ -144,27 +145,19 @@
         }
 
         .about-intro {
-            margin-top: 100px;
-            opacity: 0;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
             text-align: center;
-            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-            animation: fadeInAbout 0.8s ease-out 2.3s forwards;
+            opacity: 0;
+            pointer-events: none;
+            transition: all 1s cubic-bezier(0.25, 0.46, 0.45, 0.94);
         }
 
         .intro-container.move .about-intro {
             opacity: 1;
-            text-align: left;
-            animation: none;
-            margin-top: 80px;
-        }
-
-        @keyframes fadeInAbout {
-            from {
-                opacity: 0;
-            }
-            to {
-                opacity: 1;
-            }
+            pointer-events: auto;
         }
 
         .about-title {
@@ -178,11 +171,7 @@
             font-size: 16px;
             line-height: 1.8;
             color: #d1d5db;
-            max-width: 600px;
-        }
-
-        .intro-container.move .about-text {
-            max-width: 100%;
+            max-width: 500px;
         }
 
         .highlight {
@@ -202,37 +191,35 @@
             border-radius: 1px;
         }
 
-        .nav-container {
-            margin-top: 80px;
-            opacity: 0;
-            transition: opacity 0.6s ease-out 3s;
-            display: flex;
-            justify-content: center;
-        }
-
-        .intro-container.move .nav-container {
-            opacity: 1;
-            justify-content: flex-start;
-        }
-
-        .nav-pill {
+        .nav-buttons {
+            position: fixed;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
             display: flex;
             gap: 12px;
-            background: rgba(255, 255, 255, 0.08);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            border-radius: 50px;
-            padding: 12px 16px;
+            opacity: 0;
+            transition: opacity 0.6s ease-out 2.6s;
+            background: rgba(255, 255, 255, 0.05);
             backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 50px;
+            padding: 12px 20px;
+            z-index: 100;
+        }
+
+        .nav-buttons.visible {
+            opacity: 1;
         }
 
         .nav-button {
             width: 50px;
             height: 50px;
             border-radius: 10px;
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
             color: #fff;
-            font-size: 24px;
+            font-size: 20px;
             cursor: pointer;
             transition: all 0.3s ease;
             display: flex;
@@ -241,22 +228,17 @@
         }
 
         .nav-button:hover {
-            background: rgba(251, 191, 36, 0.2);
+            background: rgba(251, 191, 36, 0.15);
             border-color: #fbbf24;
             transform: translateY(-2px);
         }
 
-        /* PROJECTS PAGE */
         .projects-page {
             flex-direction: column;
             align-items: flex-start;
             justify-content: flex-start;
-            padding: 80px 40px 120px 40px;
+            padding: 80px 60px;
             overflow-y: auto;
-        }
-
-        .projects-content {
-            max-width: 1200px;
         }
 
         .projects-grid {
@@ -339,20 +321,19 @@
             margin-top: 20px;
         }
 
-        .projects-nav-container {
+        .projects-nav-buttons {
             position: fixed;
             bottom: 40px;
-            left: 40px;
-        }
-
-        .projects-nav-pill {
+            left: 50%;
+            transform: translateX(-50%);
             display: flex;
             gap: 12px;
-            background: rgba(255, 255, 255, 0.08);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            border-radius: 50px;
-            padding: 12px 16px;
+            background: rgba(255, 255, 255, 0.05);
             backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 50px;
+            padding: 12px 20px;
+            z-index: 100;
         }
 
         @media (max-width: 768px) {
@@ -362,7 +343,7 @@
 
             .intro-text,
             .name-star {
-                font-size: 20px;
+                font-size: 16px;
             }
 
             .about-title {
@@ -377,14 +358,8 @@
                 grid-template-columns: 1fr;
             }
 
-            .intro-container.move {
-                transform: translateY(-150px) translateX(-100px);
-            }
-
-            .nav-button {
-                width: 45px;
-                height: 45px;
-                font-size: 20px;
+            .projects-page {
+                padding: 60px 30px;
             }
         }
     </style>
@@ -392,10 +367,10 @@
 <body>
     <div class="page home-page active" id="homePage">
         <div class="intro-container" id="introContainer">
-            <div class="hello" id="helloText"></div>
+            <div class="hello" id="hello"></div>
             <div class="intro">
                 <span class="intro-text">My name is</span>
-                <div class="name-star" id="nameStar">
+                <div class="name-star">
                     star
                     <div class="sparkles" id="sparklesContainer"></div>
                 </div>
@@ -410,20 +385,18 @@
                 </p>
             </div>
 
-            <div class="nav-container">
-                <div class="nav-pill">
-                    <button class="nav-button" id="homeBtn" title="Home" onclick="goToPage('home')">🏠</button>
-                    <button class="nav-button" id="projectsBtn" title="Projects" onclick="goToPage('projects')">🔧</button>
-                    <button class="nav-button" id="githubBtn" title="GitHub" onclick="window.open('https://github.com', '_blank')">🐙</button>
-                    <button class="nav-button" id="discordBtn" title="Discord" onclick="window.open('https://discord.com', '_blank')">💬</button>
-                </div>
+            <div class="nav-buttons" id="navButtons">
+                <button class="nav-button" id="homeBtn" title="Home">🏠</button>
+                <button class="nav-button" id="projectsBtn" title="Projects" onclick="goToPage('projects')">🔧</button>
+                <button class="nav-button" id="githubBtn" title="GitHub" onclick="window.open('https://github.com', '_blank')">🐙</button>
+                <button class="nav-button" id="discordBtn" title="Discord" onclick="window.open('https://discord.com', '_blank')">💬</button>
             </div>
         </div>
     </div>
 
     <!-- Projects Page -->
     <div class="page projects-page" id="projectsPage">
-        <div class="projects-content">
+        <div style="width: 100%; max-width: 1200px;">
             <div style="margin-bottom: 40px;">
                 <h2 class="section-title">Projects</h2>
                 <p class="section-subtitle">A collection of things I've built.</p>
@@ -445,10 +418,8 @@
                     </div>
                 </div>
             </div>
-        </div>
 
-        <div class="projects-nav-container">
-            <div class="projects-nav-pill">
+            <div class="projects-nav-buttons">
                 <button class="nav-button" id="homeBtn2" title="Home" onclick="goToPage('home')">🏠</button>
                 <button class="nav-button" id="projectsBtn2" title="Projects">🔧</button>
                 <button class="nav-button" id="githubBtn2" title="GitHub" onclick="window.open('https://github.com', '_blank')">🐙</button>
@@ -458,109 +429,72 @@
     </div>
 
     <script>
-        const helloText = document.getElementById('helloText');
-        const introContainer = document.getElementById('introContainer');
-        const sparklesContainer = document.getElementById('sparklesContainer');
-        const nameStar = document.getElementById('nameStar');
-
-        // Smooth typewriter effect for "hello"
-        function typeWrite() {
-            const text = 'hello';
-            let index = 0;
-            helloText.textContent = '';
-
-            const typeInterval = setInterval(() => {
-                if (index < text.length) {
-                    helloText.textContent += text[index];
-                    index++;
-                } else {
-                    clearInterval(typeInterval);
-                    // Start sparkles and intro animation after typewriter finishes
-                    setTimeout(() => {
-                        createSparkles();
-                        startSparkleAnimation();
-                    }, 300);
-                }
-            }, 80); // Smooth typing speed
-        }
-
-        // Create sparkles around "star" text
         function createSparkles() {
-            sparklesContainer.innerHTML = '';
-            const sparkleCount = 12;
-
-            for (let i = 0; i < sparkleCount; i++) {
+            const container = document.getElementById('sparklesContainer');
+            container.innerHTML = '';
+            
+            for (let i = 0; i < 8; i++) {
                 const sparkle = document.createElement('div');
                 sparkle.className = 'sparkle';
-
-                const angle = (i / sparkleCount) * Math.PI * 2;
-                const distance = 35;
+                
+                const angle = (i / 8) * Math.PI * 2;
+                const distance = 28;
                 const x = Math.cos(angle) * distance;
                 const y = Math.sin(angle) * distance;
-
+                
                 sparkle.style.left = (50 + x) + '%';
                 sparkle.style.top = (50 + y) + '%';
-                sparkle.style.transform = 'translate(-50%, -50%)';
-
-                sparklesContainer.appendChild(sparkle);
+                sparkle.style.animationDelay = (i * 0.2) + 's';
+                
+                container.appendChild(sparkle);
             }
         }
 
-        // Animate sparkles popping in and out
-        function startSparkleAnimation() {
-            const sparkles = sparklesContainer.querySelectorAll('.sparkle');
-            let sparkleIndex = 0;
-
-            const sparkleInterval = setInterval(() => {
-                if (sparkleIndex < sparkles.length) {
-                    const sparkle = sparkles[sparkleIndex];
-                    const duration = 600 + Math.random() * 400; // 600-1000ms
-                    
-                    sparkle.style.animation = `sparklePopIn ${duration}ms ease-out forwards`;
-                    sparkle.style.animationDelay = Math.random() * 800 + 'ms';
-                    
-                    sparkleIndex++;
-                } else {
-                    // Loop the animation
-                    sparkleIndex = 0;
-                }
-            }, 100);
-
-            // Continue looping sparkles
-            setTimeout(() => {
-                clearInterval(sparkleInterval);
-                // Restart the loop
-                const loopSparkles = () => {
-                    sparkles.forEach(sparkle => {
-                        const duration = 600 + Math.random() * 400;
-                        sparkle.style.animation = `sparklePopIn ${duration}ms ease-out`;
-                        sparkle.style.animationDelay = Math.random() * 1200 + 'ms';
-                    });
-                };
-                loopSparkles();
-                setInterval(loopSparkles, 2500);
-            }, 2000);
+        function typewriteHello() {
+            const hello = document.getElementById('hello');
+            const text = 'hello';
+            hello.innerHTML = '';
+            
+            let delay = 0;
+            for (let char of text) {
+                const span = document.createElement('span');
+                span.className = 'hello-char';
+                span.textContent = char;
+                span.style.animationDelay = (delay * 0.08) + 's';
+                hello.appendChild(span);
+                delay++;
+            }
         }
 
         function goToPage(pageName) {
             const pages = document.querySelectorAll('.page');
             pages.forEach(page => page.classList.remove('active'));
-
+            
             if (pageName === 'home') {
                 document.getElementById('homePage').classList.add('active');
+                const introContainer = document.getElementById('introContainer');
                 introContainer.classList.remove('move');
+                document.getElementById('navButtons').classList.remove('visible');
             } else if (pageName === 'projects') {
                 document.getElementById('projectsPage').classList.add('active');
             }
         }
 
-        // Start the animation sequence
-        typeWrite();
-
-        // Move intro after 3.5 seconds
+        // Start typewriter effect immediately
+        typewriteHello();
+        
+        // Show nav buttons after intro animation completes
         setTimeout(() => {
+            document.getElementById('navButtons').classList.add('visible');
+        }, 2600);
+
+        // Trigger the blur and move animation
+        setTimeout(() => {
+            const introContainer = document.getElementById('introContainer');
             introContainer.classList.add('move');
         }, 3500);
+
+        createSparkles();
     </script>
 </body>
 </html>
