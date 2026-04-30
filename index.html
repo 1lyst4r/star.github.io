@@ -370,16 +370,6 @@
             margin-bottom: 0;
         }
 
-        .floatingImg {
-            position: fixed;
-            width: 80px;
-            height: 80px;
-            border-radius: 15px;
-            object-fit: cover;
-            pointer-events: none;
-            z-index: 5;
-        }
-
         .muteBtn {
             position: fixed;
             bottom: 30px;
@@ -487,11 +477,6 @@
                 height: 60px;
             }
 
-            .floatingImg {
-                width: 60px;
-                height: 60px;
-            }
-
             .muteBtn {
                 width: 50px;
                 height: 50px;
@@ -537,11 +522,6 @@
 </head>
 <body>
     <canvas id="audioVisualizer"></canvas>
-
-    <img src="https://i.imgur.com/XpM7lCA.png" alt="mimi" class="floatingImg">
-    <img src="https://i.imgur.com/Zm80C8Y.png" alt="mimi" class="floatingImg">
-    <img src="https://i.imgur.com/7ZaPhYb.png" alt="mimi" class="floatingImg">
-    <img src="https://i.imgur.com/ewJ7U3Z.png" alt="mimi" class="floatingImg">
 
     <button class="muteBtn" id="muteBtn" title="Mute/Unmute">🔊</button>
 
@@ -609,16 +589,11 @@
     </div>
 
     <script>
-        const gravity = 0.15;
-        const bounce = 1.0;
-        const maxVelocity = 8;
-
-        const floatingImages = [];
         let isAudioMuted = false;
 
         const playlist = [
-            'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3',
-            'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3'
+            'https://files.catbox.moe/v6tq1e.mp3',
+            'https://files.catbox.moe/qm1jkq.mp3'
         ];
 
         let currentTrack = 0;
@@ -676,50 +651,6 @@
             requestAnimationFrame(drawVisualizer);
         }
 
-        function initFloatingImages() {
-            const images = document.querySelectorAll('.floatingImg');
-            images.forEach((img) => {
-                floatingImages.push({
-                    element: img,
-                    x: Math.random() * (window.innerWidth - 80),
-                    y: Math.random() * (window.innerHeight - 80),
-                    vx: (Math.random() - 0.5) * 4,
-                    vy: Math.random() * 2,
-                    width: 80,
-                    height: 80
-                });
-            });
-        }
-
-        function updateFloatingPhysics() {
-            floatingImages.forEach(img => {
-                img.vy += gravity;
-
-                if (img.vy > maxVelocity) {
-                    img.vy = maxVelocity;
-                }
-
-                img.x += img.vx;
-                img.y += img.vy;
-
-                if (img.x <= 0 || img.x >= window.innerWidth - img.width) {
-                    img.vx *= -bounce;
-                    img.vx += (Math.random() - 0.5) * 15;
-                    img.x = img.x <= 0 ? 0 : window.innerWidth - img.width;
-                }
-
-                if (img.y <= 0 || img.y >= window.innerHeight - img.height) {
-                    img.vy *= -bounce;
-                    img.y = img.y <= 0 ? 0 : window.innerHeight - img.height;
-                }
-
-                img.element.style.left = img.x + 'px';
-                img.element.style.top = img.y + 'px';
-            });
-
-            requestAnimationFrame(updateFloatingPhysics);
-        }
-
         function setupAudio() {
             audioElement.src = playlist[currentTrack];
 
@@ -751,8 +682,6 @@
 
         window.addEventListener('load', () => {
             resizeCanvas();
-            initFloatingImages();
-            updateFloatingPhysics();
             setupAudio();
             drawVisualizer();
         });
