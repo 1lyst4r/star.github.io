@@ -21,7 +21,7 @@
             overflow-x: hidden;
         }
 
-        .background-stars {
+        #audioVisualizer {
             position: fixed;
             width: 100%;
             height: 100%;
@@ -29,20 +29,6 @@
             left: 0;
             z-index: 0;
             pointer-events: none;
-        }
-
-        .bg-star {
-            position: absolute;
-            font-size: 120px;
-            animation: color-flicker 1s infinite;
-            opacity: 0.6;
-        }
-
-        @keyframes color-flicker {
-            0%, 100% { color: #ffffff; }
-            25% { color: #ff00ff; }
-            50% { color: #00ffff; }
-            75% { color: #ffff00; }
         }
 
         svg {
@@ -64,6 +50,7 @@
             display: flex;
             flex-direction: column;
             min-height: 100vh;
+            transition: transform 0.1s ease-out;
         }
 
         header {
@@ -89,22 +76,22 @@
             animation: slideInLeft 0.8s ease;
         }
 
-        .star-symbol {
+        .starIcon {
             width: 40px;
             height: 40px;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 28px;
-            animation: rotate-star 4s linear infinite, pulse-star 2s ease-in-out infinite;
+            animation: rotateIcon 4s linear infinite, pulseIcon 2s ease-in-out infinite;
         }
 
-        @keyframes rotate-star {
+        @keyframes rotateIcon {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
 
-        @keyframes pulse-star {
+        @keyframes pulseIcon {
             0%, 100% { text-shadow: 0 0 10px rgba(168, 85, 247, 0.5); }
             50% { text-shadow: 0 0 20px rgba(168, 85, 247, 0.8); }
         }
@@ -120,13 +107,13 @@
             }
         }
 
-        .nav-links {
+        .navMenu {
             display: flex;
             gap: 20px;
             align-items: center;
         }
 
-        .nav-links a {
+        .navMenu a {
             color: #d1d5db;
             text-decoration: none;
             font-size: 14px;
@@ -136,7 +123,7 @@
             gap: 5px;
         }
 
-        .nav-links a:hover {
+        .navMenu a:hover {
             color: #a855f7;
         }
 
@@ -150,7 +137,7 @@
             padding: 60px 0;
         }
 
-        .hero-content {
+        .heroContent {
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -160,14 +147,14 @@
             max-width: 500px;
         }
 
-        .star-title {
+        .titleGroup {
             position: relative;
             display: flex;
             align-items: center;
             gap: 20px;
         }
 
-        .star-title h1 {
+        .titleGroup h1 {
             font-size: 72px;
             font-weight: 700;
             margin: 0;
@@ -175,34 +162,34 @@
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            animation: fadeInDown 1s ease;
+            animation: slideDown 1s ease;
             letter-spacing: 2px;
         }
 
-        .avatar-small {
+        .profilePic {
             width: 80px;
             height: 80px;
             border-radius: 50%;
             object-fit: cover;
             border: 2px solid white;
-            animation: fadeInDown 1s ease 0.1s both;
+            animation: slideDown 1s ease 0.1s both;
             transition: all 0.3s ease;
         }
 
-        .avatar-small:hover {
+        .profilePic:hover {
             transform: scale(1.1);
         }
 
-        .star-title::before {
+        .titleGroup::before {
             content: '⭐';
             position: absolute;
             font-size: 40px;
             left: -60px;
-            animation: bounce 2s ease-in-out infinite;
+            animation: bounceUp 2s ease-in-out infinite;
             top: -10px;
         }
 
-        @keyframes bounce {
+        @keyframes bounceUp {
             0%, 100% { transform: translateY(0); }
             50% { transform: translateY(-20px); }
         }
@@ -211,7 +198,7 @@
             font-size: 24px;
             color: #a9b1d6;
             max-width: 600px;
-            animation: fadeInUp 1s ease 0.2s both;
+            animation: fadeUp 1s ease 0.2s both;
             font-style: italic;
             display: flex;
             align-items: center;
@@ -223,23 +210,23 @@
             font-size: 20px;
         }
 
-        .bio {
+        .description {
             font-size: 16px;
             color: #d1d5db;
             max-width: 700px;
             line-height: 1.8;
-            animation: fadeInUp 1s ease 0.3s both;
+            animation: fadeUp 1s ease 0.3s both;
         }
 
-        .tech-stack {
+        .skills {
             display: flex;
             align-items: center;
             gap: 15px;
             flex-wrap: wrap;
-            animation: fadeInUp 1s ease 0.4s both;
+            animation: fadeUp 1s ease 0.4s both;
         }
 
-        .tech-badge {
+        .skillTag {
             background: black;
             border: 1px solid white;
             padding: 8px 16px;
@@ -251,19 +238,19 @@
             cursor: default;
         }
 
-        .tech-badge:hover {
+        .skillTag:hover {
             background: white;
             color: black;
         }
 
-        .cta-buttons {
+        .buttonGroup {
             display: flex;
             gap: 15px;
             flex-wrap: wrap;
-            animation: fadeInUp 1s ease 0.5s both;
+            animation: fadeUp 1s ease 0.5s both;
         }
 
-        .btn {
+        .actionBtn {
             padding: 12px 32px;
             border-radius: 8px;
             font-size: 16px;
@@ -275,35 +262,35 @@
             display: inline-block;
         }
 
-        .btn-primary {
+        .primaryBtn {
             background: white;
             color: black;
         }
 
-        .btn-primary:hover {
+        .primaryBtn:hover {
             transform: translateY(-2px);
             background: black;
             color: white;
         }
 
-        .btn-secondary {
+        .secondaryBtn {
             background: black;
             color: white;
             border: 2px solid white;
         }
 
-        .btn-secondary:hover {
+        .secondaryBtn:hover {
             background: white;
             color: black;
         }
 
-        .social-section {
+        .socials {
             display: flex;
             gap: 25px;
-            animation: fadeInUp 1s ease 0.6s both;
+            animation: fadeUp 1s ease 0.6s both;
         }
 
-        .social-link {
+        .socialIcon {
             width: 50px;
             height: 50px;
             display: flex;
@@ -319,26 +306,26 @@
             overflow: hidden;
         }
 
-        .social-link img {
+        .socialIcon img {
             width: 100%;
             height: 100%;
             object-fit: cover;
             border-radius: 10px;
         }
 
-        .social-link:hover {
+        .socialIcon:hover {
             transform: translateY(-3px) scale(1.1);
         }
 
-        .info-section {
+        .infoPanel {
             flex: 1;
             display: flex;
             flex-direction: column;
             gap: 20px;
-            animation: fadeInRight 1s ease 0.3s both;
+            animation: slideRight 1s ease 0.3s both;
         }
 
-        .info-container {
+        .infoPanelBox {
             width: 100%;
             height: 100%;
             border-radius: 20px;
@@ -346,7 +333,7 @@
             border: 2px solid white;
         }
 
-        .info-text {
+        .infoPanelText {
             width: 100%;
             height: 100%;
             background: black;
@@ -355,35 +342,35 @@
             overflow-y: auto;
         }
 
-        .info-text::-webkit-scrollbar {
+        .infoPanelText::-webkit-scrollbar {
             width: 6px;
         }
 
-        .info-text::-webkit-scrollbar-track {
+        .infoPanelText::-webkit-scrollbar-track {
             background: transparent;
         }
 
-        .info-text::-webkit-scrollbar-thumb {
+        .infoPanelText::-webkit-scrollbar-thumb {
             background: white;
             border-radius: 3px;
         }
 
-        .info-text::-webkit-scrollbar-thumb:hover {
+        .infoPanelText::-webkit-scrollbar-thumb:hover {
             background: white;
         }
 
-        .info-text p {
+        .infoPanelText p {
             color: #d1d5db;
             line-height: 1.8;
             font-size: 15px;
             margin-bottom: 15px;
         }
 
-        .info-text p:last-child {
+        .infoPanelText p:last-child {
             margin-bottom: 0;
         }
 
-        .bouncing-image {
+        .floatingImg {
             position: fixed;
             width: 80px;
             height: 80px;
@@ -393,25 +380,34 @@
             z-index: 5;
         }
 
-        .meteor {
+        .muteBtn {
             position: fixed;
-            width: 4px;
-            height: 4px;
-            background: white;
+            bottom: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
             border-radius: 50%;
-            pointer-events: none;
-            z-index: 3;
-            box-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+            background: white;
+            color: black;
+            border: 2px solid white;
+            font-size: 28px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 200;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
         }
 
-        .meteor::before {
-            content: '';
-            position: absolute;
-            width: 2px;
-            height: 100px;
-            background: linear-gradient(to bottom, rgba(255, 255, 255, 0.8), transparent);
-            top: 4px;
-            left: 1px;
+        .muteBtn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 30px rgba(255, 255, 255, 0.6);
+        }
+
+        .muteBtn.muted {
+            background: black;
+            color: white;
         }
 
         @media (max-width: 1024px) {
@@ -420,28 +416,28 @@
                 gap: 40px;
             }
 
-            .hero-content {
+            .heroContent {
                 align-items: center;
                 text-align: center;
             }
 
-            .star-title {
+            .titleGroup {
                 justify-content: center;
             }
 
-            .star-title::before {
+            .titleGroup::before {
                 left: -50px;
             }
 
-            .cta-buttons {
+            .buttonGroup {
                 justify-content: center;
             }
 
-            .social-section {
+            .socials {
                 justify-content: center;
             }
 
-            .info-section {
+            .infoPanel {
                 max-width: 600px;
                 margin: 0 auto;
             }
@@ -456,52 +452,56 @@
                 font-size: 18px;
             }
 
-            .star-title::before {
+            .titleGroup::before {
                 font-size: 24px;
                 left: -40px;
             }
 
-            .nav-links {
+            .navMenu {
                 gap: 10px;
             }
 
-            .nav-links a {
+            .navMenu a {
                 font-size: 12px;
             }
 
-            .cta-buttons {
+            .buttonGroup {
                 flex-direction: column;
                 width: 100%;
             }
 
-            .btn {
+            .actionBtn {
                 width: 100%;
             }
 
-            .info-section {
+            .infoPanel {
                 max-width: 100%;
             }
 
-            .info-text {
+            .infoPanelText {
                 height: 300px;
             }
 
-            .avatar-small {
+            .profilePic {
                 width: 60px;
                 height: 60px;
             }
 
-            .bouncing-image {
+            .floatingImg {
                 width: 60px;
                 height: 60px;
             }
 
-            .bg-star {
-                font-size: 60px;
+            .muteBtn {
+                width: 50px;
+                height: 50px;
+                bottom: 20px;
+                right: 20px;
+                font-size: 22px;
             }
         }
 
-        @keyframes fadeInDown {
+        @keyframes slideDown {
             from {
                 opacity: 0;
                 transform: translateY(-30px);
@@ -512,7 +512,7 @@
             }
         }
 
-        @keyframes fadeInUp {
+        @keyframes fadeUp {
             from {
                 opacity: 0;
                 transform: translateY(30px);
@@ -523,7 +523,7 @@
             }
         }
 
-        @keyframes fadeInRight {
+        @keyframes slideRight {
             from {
                 opacity: 0;
                 transform: translateX(30px);
@@ -533,31 +533,29 @@
                 transform: translateX(0);
             }
         }
-
-        @keyframes meteor-fall {
-            to {
-                transform: translateY(100vh) translateX(200px);
-                opacity: 0;
-            }
-        }
     </style>
 </head>
 <body>
-    <div class="background-stars" id="backgroundStars"></div>
-    <svg id="constellation"></svg>
+    <canvas id="audioVisualizer"></canvas>
 
-    <img src="https://i.imgur.com/XpM7lCA.png" alt="mimi" class="bouncing-image">
-    <img src="https://i.imgur.com/Zm80C8Y.png" alt="mimi" class="bouncing-image">
-    <img src="https://i.imgur.com/7ZaPhYb.png" alt="mimi" class="bouncing-image">
-    <img src="https://i.imgur.com/ewJ7U3Z.png" alt="mimi" class="bouncing-image">
+    <img src="https://i.imgur.com/XpM7lCA.png" alt="mimi" class="floatingImg">
+    <img src="https://i.imgur.com/Zm80C8Y.png" alt="mimi" class="floatingImg">
+    <img src="https://i.imgur.com/7ZaPhYb.png" alt="mimi" class="floatingImg">
+    <img src="https://i.imgur.com/ewJ7U3Z.png" alt="mimi" class="floatingImg">
 
-    <div class="container">
+    <button class="muteBtn" id="muteBtn" title="Mute/Unmute">🔊</button>
+
+    <audio id="audio" loop>
+        <source src="" type="audio/mpeg">
+    </audio>
+
+    <div class="container" id="mainContainer">
         <header>
             <a href="#" class="logo">
-                <div class="star-symbol">⭐</div>
+                <div class="starIcon">⭐</div>
                 star
             </a>
-            <nav class="nav-links">
+            <nav class="navMenu">
                 <a href="#about">about</a>
                 <a href="#?"> </a>
                 <a href="#?"> </a>
@@ -565,44 +563,44 @@
         </header>
 
         <section class="hero" id="about">
-            <div class="hero-content">
-                <div class="star-title">
+            <div class="heroContent">
+                <div class="titleGroup">
                     <h1>star</h1>
-                    <img src="https://i.imgur.com/9Xb0E6N.jpeg" alt="Your avatar" class="avatar-small">
+                    <img src="https://i.imgur.com/9Xb0E6N.jpeg" alt="Your avatar" class="profilePic">
                 </div>
 
                 <p class="tagline">visible stars through glass window</p>
 
-                <p class="bio">
+                <p class="description">
                     cool 15 year old girl.
                 </p>
 
-                <div class="tech-stack">
-                    <span class="tech-badge">Lua</span>
-                    <span class="tech-badge">Creator</span>
+                <div class="skills">
+                    <span class="skillTag">Lua</span>
+                    <span class="skillTag">Creator</span>
                 </div>
 
-                <div class="cta-buttons">
-                    <button class="btn btn-primary">Get Started</button>
-                    <button class="btn btn-secondary">Learn More</button>
+                <div class="buttonGroup">
+                    <button class="actionBtn primaryBtn">?</button>
+                    <button class="actionBtn secondaryBtn">?</button>
                 </div>
 
-                <div class="social-section">
-                    <a href="https://x.com/ozam_gd" class="social-link" title="Twitter">
+                <div class="socials">
+                    <a href="https://x.com/ozam_gd" class="socialIcon" title="Twitter">
                         <img src="https://i.imgur.com/IOYwU73.png" alt="Twitter">
                     </a>
-                    <a href="https://www.youtube.com/@1lyst4rr" class="social-link" title="YouTube">
+                    <a href="https://www.youtube.com/@1lyst4rr" class="socialIcon" title="YouTube">
                         <img src="https://i.imgur.com/D7B1SyC.png" alt="YouTube">
                     </a>
-                    <a href="https://www.roblox.com/users/449367437/profile" class="social-link" title="Roblox">
+                    <a href="https://www.roblox.com/users/449367437/profile" class="socialIcon" title="Roblox">
                         <img src="https://i.imgur.com/u59wQGP.png" alt="Roblox">
                     </a>
                 </div>
             </div>
 
-            <div class="info-section">
-                <div class="info-container">
-                    <div class="info-text">
+            <div class="infoPanel">
+                <div class="infoPanelBox">
+                    <div class="infoPanelText">
                         <p>a really cool 15 year old girl. i like coding and ui designing. i don't know what else to say, scroll down to send me messages i guess. oh yeah i really love mimi!!!</p>
                     </div>
                 </div>
@@ -611,63 +609,107 @@
     </div>
 
     <script>
-        const GRAVITY = 0.15;
-        const BOUNCE_ELASTICITY = 1.0;
-        const TERMINAL_VELOCITY = 8;
+        const gravity = 0.15;
+        const bounce = 1.0;
+        const maxVelocity = 8;
 
-        const bouncingImagesPhysics = [];
+        const floatingImages = [];
+        let isAudioMuted = false;
 
-        function createBackgroundStars() {
-            const backgroundStars = document.getElementById('backgroundStars');
-            const starCount = 8;
-            const spacing = window.innerWidth / (starCount + 1);
+        const playlist = [
+            'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3',
+            'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3'
+        ];
 
-            for (let i = 1; i <= starCount; i++) {
-                const star = document.createElement('div');
-                star.className = 'bg-star';
-                star.textContent = '⭐';
-                star.style.left = (spacing * i - 60) + 'px';
-                star.style.top = Math.random() * (window.innerHeight - 200) + 'px';
-                star.style.animationDelay = (Math.random() * 0.5) + 's';
-                backgroundStars.appendChild(star);
+        let currentTrack = 0;
+        const audioElement = document.getElementById('audio');
+        const muteButton = document.getElementById('muteBtn');
+        const mainContainer = document.getElementById('mainContainer');
+        const canvas = document.getElementById('audioVisualizer');
+        const canvasCtx = canvas.getContext('2d');
+
+        let audioCtx;
+        let analyser;
+        let dataArray;
+
+        function initAudioContext() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                analyser = audioCtx.createAnalyser();
+                analyser.fftSize = 256;
+                const bufferLength = analyser.frequencyBinCount;
+                dataArray = new Uint8Array(bufferLength);
+
+                const source = audioCtx.createMediaElementAudioSource(audioElement);
+                source.connect(analyser);
+                analyser.connect(audioCtx.destination);
             }
         }
 
-        function initializeBouncingImages() {
-            const images = document.querySelectorAll('.bouncing-image');
-            images.forEach((img, index) => {
-                bouncingImagesPhysics.push({
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+
+        function drawVisualizer() {
+            if (!analyser) return;
+
+            analyser.getByteFrequencyData(dataArray);
+
+            canvasCtx.fillStyle = 'rgba(10, 10, 10, 0.2)';
+            canvasCtx.fillRect(0, 0, canvas.width, canvas.height);
+
+            const barWidth = (canvas.width / dataArray.length) * 2.5;
+            let barHeight;
+            let x = 0;
+
+            for (let i = 0; i < dataArray.length; i++) {
+                barHeight = (dataArray[i] / 255) * canvas.height * 0.7;
+
+                const hue = (i / dataArray.length) * 360;
+                canvasCtx.fillStyle = `hsl(${hue}, 100%, 50%)`;
+                canvasCtx.fillRect(x, canvas.height - barHeight, barWidth, barHeight);
+
+                x += barWidth + 1;
+            }
+
+            requestAnimationFrame(drawVisualizer);
+        }
+
+        function initFloatingImages() {
+            const images = document.querySelectorAll('.floatingImg');
+            images.forEach((img) => {
+                floatingImages.push({
                     element: img,
                     x: Math.random() * (window.innerWidth - 80),
                     y: Math.random() * (window.innerHeight - 80),
                     vx: (Math.random() - 0.5) * 4,
                     vy: Math.random() * 2,
                     width: 80,
-                    height: 80,
-                    radius: 40
+                    height: 80
                 });
             });
         }
 
-        function updateBouncingPhysics() {
-            bouncingImagesPhysics.forEach(img => {
-                img.vy += GRAVITY;
+        function updateFloatingPhysics() {
+            floatingImages.forEach(img => {
+                img.vy += gravity;
 
-                if (img.vy > TERMINAL_VELOCITY) {
-                    img.vy = TERMINAL_VELOCITY;
+                if (img.vy > maxVelocity) {
+                    img.vy = maxVelocity;
                 }
 
                 img.x += img.vx;
                 img.y += img.vy;
 
                 if (img.x <= 0 || img.x >= window.innerWidth - img.width) {
-                    img.vx *= -BOUNCE_ELASTICITY;
+                    img.vx *= -bounce;
                     img.vx += (Math.random() - 0.5) * 15;
                     img.x = img.x <= 0 ? 0 : window.innerWidth - img.width;
                 }
 
                 if (img.y <= 0 || img.y >= window.innerHeight - img.height) {
-                    img.vy *= -BOUNCE_ELASTICITY;
+                    img.vy *= -bounce;
                     img.y = img.y <= 0 ? 0 : window.innerHeight - img.height;
                 }
 
@@ -675,49 +717,56 @@
                 img.element.style.top = img.y + 'px';
             });
 
-            requestAnimationFrame(updateBouncingPhysics);
+            requestAnimationFrame(updateFloatingPhysics);
         }
 
-        function createMeteorShower() {
-            const meteorCount = Math.floor(Math.random() * 15) + 10;
-            
-            for (let i = 0; i < meteorCount; i++) {
-                const meteor = document.createElement('div');
-                meteor.className = 'meteor';
-                
-                const startX = Math.random() * window.innerWidth;
-                const startY = -50;
-                
-                meteor.style.left = startX + 'px';
-                meteor.style.top = startY + 'px';
-                meteor.style.animation = `meteor-fall ${Math.random() * 2 + 1}s linear forwards`;
-                meteor.style.transform = `rotate(${Math.random() * 360}deg)`;
-                
-                document.body.appendChild(meteor);
-                
-                setTimeout(() => meteor.remove(), 3000);
+        function setupAudio() {
+            audioElement.src = playlist[currentTrack];
+
+            audioElement.addEventListener('ended', () => {
+                currentTrack = (currentTrack + 1) % playlist.length;
+                audioElement.src = playlist[currentTrack];
+                if (!isAudioMuted) {
+                    audioElement.play();
+                }
+            });
+        }
+
+        function toggleAudioMute() {
+            isAudioMuted = !isAudioMuted;
+
+            if (isAudioMuted) {
+                audioElement.pause();
+                muteButton.textContent = '🔇';
+                muteButton.classList.add('muted');
+            } else {
+                initAudioContext();
+                audioElement.play();
+                muteButton.textContent = '🔊';
+                muteButton.classList.remove('muted');
             }
         }
 
-        function triggerMeteorShowerRandomly() {
-            setInterval(() => {
-                if (Math.random() > 0.5) {
-                    createMeteorShower();
-                }
-            }, Math.random() * 10000 + 8000);
-        }
+        muteButton.addEventListener('click', toggleAudioMute);
 
         window.addEventListener('load', () => {
-            createBackgroundStars();
-            initializeBouncingImages();
-            updateBouncingPhysics();
-            triggerMeteorShowerRandomly();
+            resizeCanvas();
+            initFloatingImages();
+            updateFloatingPhysics();
+            setupAudio();
+            drawVisualizer();
         });
 
         window.addEventListener('resize', () => {
-            document.getElementById('backgroundStars').innerHTML = '';
-            createBackgroundStars();
+            resizeCanvas();
         });
+
+        document.addEventListener('click', () => {
+            if (audioElement.paused && !isAudioMuted) {
+                initAudioContext();
+                audioElement.play();
+            }
+        }, { once: true });
     </script>
 </body>
 </html>
