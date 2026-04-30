@@ -440,10 +440,14 @@
             cursor: pointer;
             transition: all 0.3s ease;
             z-index: 200;
-            display: flex;
+            display: none;
             align-items: center;
             justify-content: center;
             box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+        }
+
+        .muteBtn.active {
+            display: flex;
         }
 
         .muteBtn:hover {
@@ -595,7 +599,6 @@
     </div>
 
     <canvas id="audioVisualizer"></canvas>
-
     <button class="muteBtn" id="muteBtn" title="Mute/Unmute">🔊</button>
 
     <audio id="audio" crossorigin="anonymous">
@@ -662,64 +665,119 @@
     </div>
 
     <script>
-        let isAudioMuted = false;
-        let audioEnabled = false;
-
-        const playlist = [
-            { url: 'https://files.catbox.moe/v6tq1e.mp3', bpm: 155 },
-            { url: 'https://files.catbox.moe/qm1jkq.mp3', bpm: 141 }
-        ];
-
-        let currentTrack = 0;
+        const audioPrompt = document.getElementById('audioPrompt');
+        const enableAudioBtn = document.getElementById('enableAudioBtn');
+        const disableAudioBtn = document.getElementById('disableAudioBtn');
         const audioElement = document.getElementById('audio');
         const muteButton = document.getElementById('muteBtn');
         const mainContainer = document.getElementById('mainContainer');
         const canvas = document.getElementById('audioVisualizer');
         const canvasCtx = canvas.getContext('2d');
-        const audioPrompt = document.getElementById('audioPrompt');
-        const enableAudioBtn = document.getElementById('enableAudioBtn');
-        const disableAudioBtn = document.getElementById('disableAudioBtn');
 
-        let audioCtx;
-        let analyser;
-        let dataArray;
-        let currentBPM = 155;
+        const songs = [
+            { url: 'https://files.catbox.moe/v6tq1e.mp3', bpm: 155 },
+            { url: 'https://files.catbox.moe/qm1jkq.mp3', bpm: 141 }
+        ];
 
-        function initAudioContext() {
-            if (!audioCtx) {
+        let currentTrackIdx = 0;
+        let audioCtx = null;
+        let analyser = null;
+        let frequencyData = null;
+        let isMuted = false;
+        let isAudioEnabled = false;
+        let currentBpm = 155;
+
+        function setupAudioContext() {
+            if (audioCtx) return;
+
+            try {
                 audioCtx = new (window.AudioContext || window.webkitAudioContext)();
                 analyser = audioCtx.createAnalyser();
                 analyser.fftSize = 512;
-                const bufferLength = analyser.frequencyBinCount;
-                dataArray = new Uint8Array(bufferLength);
+                frequencyData = new Uint8Array(analyser.frequencyBinCount);
 
                 const source = audioCtx.createMediaElementAudioSource(audioElement);
                 source.connect(analyser);
                 analyser.connect(audioCtx.destination);
+            } catch (error) {
+                console.error('failed to create audio context:', error);
             }
         }
 
-        function resizeCanvas() {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
+        async function playAudio() {
+            if (!audioElement || isMuted) return;
+
+            try {
+                if (audioCtx && audioCtx.state === 'suspended') {
+                    await audioCtx.resume();
+                }
+                
+                const playPromise = audioElement.play();
+                if (playPromise !== undefined) {
+                    await playPromise;
+                }
+            } catch (error) {
+                console.error('playback error:', error);
+            }
+        }
+
+        function pauseAudio() {
+            if (audioElement) {
+                audioElement.pause();
+            }
+        }
+
+        function loadTrack(index) {
+            const song = songs[index];
+            audioElement.src = song.url;
+            currentBpm = song.bpm;
+        }
+
+        function handleTrackEnd() {
+            currentTrackIdx = (currentTrackIdx + 1) % songs.length;
+            loadTrack(currentTrackIdx);
+            if (isAudioEnabled && !isMuted) {
+                playAudio();
+            }
+        }
+
+        function getAverageFrequency() {
+            if (!frequencyData) return 0;
+            let total = 0;
+            for (let i = 0; i < frequencyData.length; i++) {
+                total += frequencyData[i];
+            }
+            return total / frequencyData.length;
+        }
+
+        function updateZoom() {
+            const beatDuration = (60 / currentBpm) * 1000;
+            const currentMs = audioElement.currentTime * 1000;
+            const beatPos = currentMs % beatDuration;
+            const beatPhase = beatPos / beatDuration;
+
+            const avgFreq = getAverageFrequency() || 0;
+            const freqBoost = (avgFreq / 255) * 0.03;
+
+            const zoomFactor = 1 + Math.sin(beatPhase * Math.PI * 2) * 0.06 + freqBoost;
+            mainContainer.style.transform = `scale(${zoomFactor})`;
         }
 
         function drawVisualizer() {
             if (!analyser) return;
 
-            analyser.getByteFrequencyData(dataArray);
+            analyser.getByteFrequencyData(frequencyData);
 
             canvasCtx.fillStyle = 'rgba(10, 10, 10, 0.15)';
             canvasCtx.fillRect(0, 0, canvas.width, canvas.height);
 
-            const barWidth = (canvas.width / dataArray.length) * 2.5;
-            let barHeight;
+            const barWidth = (canvas.width / frequencyData.length) * 2.5;
             let x = 0;
 
-            for (let i = 0; i < dataArray.length; i++) {
-                barHeight = (dataArray[i] / 255) * canvas.height;
+            for (let i = 0; i < frequencyData.length; i++) {
+                const barHeight = (frequencyData[i] / 255) * canvas.height;
+                const hue = (i / frequencyData.length) * 360;
 
-                const hue = (i / dataArray.length) * 360;
                 canvasCtx.fillStyle = `hsl(${hue}, 100%, 50%)`;
                 canvasCtx.fillRect(x, canvas.height - barHeight, barWidth, barHeight);
 
@@ -729,77 +787,58 @@
             requestAnimationFrame(drawVisualizer);
         }
 
-        function getAverageFrequency() {
-            if (!dataArray) return 0;
-            let sum = 0;
-            for (let i = 0; i < dataArray.length; i++) {
-                sum += dataArray[i];
+        function animate() {
+            if (isAudioEnabled && !isMuted) {
+                updateZoom();
             }
-            return sum / dataArray.length;
+            requestAnimationFrame(animate);
         }
 
-        function updateBeatZoom() {
-            const beatInterval = (60 / currentBPM) * 1000;
-            const beatPosition = (audioElement.currentTime * 1000) % beatInterval;
-            const beatPhase = beatPosition / beatInterval;
-
-            const avgFreq = getAverageFrequency();
-            const freqMultiplier = (avgFreq / 255) * 0.03;
-
-            const zoomAmount = 1 + Math.sin(beatPhase * Math.PI * 2) * 0.06 + freqMultiplier;
-            mainContainer.style.transform = `scale(${zoomAmount})`;
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
         }
 
-        function animateZoom() {
-            updateBeatZoom();
-            requestAnimationFrame(animateZoom);
-        }
+        function toggleMute() {
+            isMuted = !isMuted;
 
-        function setupAudio() {
-            const currentSong = playlist[currentTrack];
-            audioElement.src = currentSong.url;
-            currentBPM = currentSong.bpm;
-
-            audioElement.addEventListener('ended', () => {
-                currentTrack = (currentTrack + 1) % playlist.length;
-                setupAudio();
-                if (!isAudioMuted && audioEnabled) {
-                    audioElement.play();
-                }
-            });
-        }
-
-        function toggleAudioMute() {
-            isAudioMuted = !isAudioMuted;
-
-            if (isAudioMuted) {
-                audioElement.pause();
+            if (isMuted) {
+                pauseAudio();
                 muteButton.textContent = '🔇';
                 muteButton.classList.add('muted');
             } else {
-                audioElement.play();
+                playAudio();
                 muteButton.textContent = '🔊';
                 muteButton.classList.remove('muted');
             }
         }
 
-        enableAudioBtn.addEventListener('click', () => {
-            audioEnabled = true;
+        enableAudioBtn.addEventListener('click', async () => {
+            isAudioEnabled = true;
             audioPrompt.classList.add('hidden');
-            initAudioContext();
-            setupAudio();
-            audioElement.play();
+
+            setupAudioContext();
+            
+            if (audioCtx && audioCtx.state === 'suspended') {
+                await audioCtx.resume();
+            }
+
+            loadTrack(0);
+            await playAudio();
+
+            muteButton.classList.add('active');
             drawVisualizer();
-            animateZoom();
+            animate();
         });
 
         disableAudioBtn.addEventListener('click', () => {
-            audioEnabled = false;
+            isAudioEnabled = false;
             audioPrompt.classList.add('hidden');
-            muteButton.style.display = 'none';
         });
 
-        muteButton.addEventListener('click', toggleAudioMute);
+        muteButton.addEventListener('click', toggleMute);
+
+        audioElement.addEventListener('ended', handleTrackEnd);
 
         window.addEventListener('load', () => {
             resizeCanvas();
