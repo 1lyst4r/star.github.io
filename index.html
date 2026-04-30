@@ -106,7 +106,6 @@
             display: flex;
             flex-direction: column;
             min-height: 100vh;
-            transition: transform 0.05s ease-out;
         }
 
         header {
@@ -191,6 +190,7 @@
             flex: 1;
             gap: 60px;
             padding: 60px 0;
+            transition: transform 0.15s ease-out;
         }
 
         .heroContent {
@@ -618,7 +618,7 @@
             </nav>
         </header>
 
-        <section class="hero" id="about">
+        <section class="hero" id="heroSection">
             <div class="heroContent">
                 <div class="titleGroup">
                     <h1>star</h1>
@@ -670,7 +670,7 @@
         const disableAudioBtn = document.getElementById('disableAudioBtn');
         const audioElement = document.getElementById('audio');
         const muteButton = document.getElementById('muteBtn');
-        const mainContainer = document.getElementById('mainContainer');
+        const heroSection = document.getElementById('heroSection');
         const canvas = document.getElementById('audioVisualizer');
         const canvasCtx = canvas.getContext('2d');
 
@@ -741,26 +741,16 @@
             }
         }
 
-        function getAverageFrequency() {
-            if (!frequencyData) return 0;
-            let total = 0;
-            for (let i = 0; i < frequencyData.length; i++) {
-                total += frequencyData[i];
-            }
-            return total / frequencyData.length;
-        }
-
         function updateZoom() {
-            const beatDuration = (60 / currentBpm) * 1000;
-            const currentMs = audioElement.currentTime * 1000;
-            const beatPos = currentMs % beatDuration;
-            const beatPhase = beatPos / beatDuration;
+            const beatDuration = 60 / currentBpm;
+            const currentTime = audioElement.currentTime;
+            const timeSinceBeat = currentTime % beatDuration;
+            const beatProgress = timeSinceBeat / beatDuration;
 
-            const avgFreq = getAverageFrequency() || 0;
-            const freqBoost = (avgFreq / 255) * 0.03;
+            const zoomIn = Math.max(0, Math.cos(beatProgress * Math.PI));
+            const scale = 1 + (zoomIn * 0.08);
 
-            const zoomFactor = 1 + Math.sin(beatPhase * Math.PI * 2) * 0.06 + freqBoost;
-            mainContainer.style.transform = `scale(${zoomFactor})`;
+            heroSection.style.transform = `scale(${scale})`;
         }
 
         function drawVisualizer() {
