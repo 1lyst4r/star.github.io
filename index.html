@@ -8,39 +8,64 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
 
 :root {
-  --bg: #0a0a0a;
-  --text: #ffffff;
-  --text-muted: #888;
-  --name-color: #5b9cf6;
-  --dock-active: #5b9cf6;
-  --card-bg: #111111;
-  --card-border: rgba(255,255,255,0.07);
-  --ease: cubic-bezier(0.25, 0.46, 0.45, 0.94);
-  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
-  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --background-color: #0a0a0a;
+  --text-color: #ffffff;
+  --text-muted-color: #888;
+  --accent-name-color: #5b9cf6;
+  --dock-active-color: #5b9cf6;
+  --card-background-color: #111111;
+  --card-border-color: rgba(255, 255, 255, 0.07);
+  --separator-color: rgba(255, 255, 255, 0.1);
+  --easing-standard: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  --easing-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --easing-in-out: cubic-bezier(0.65, 0, 0.35, 1);
 }
 
 [data-theme="light"] {
-  --bg: #f8f8f8;
-  --text: #0a0a0a;
-  --text-muted: #666;
-  --name-color: #2563eb;
-  --dock-active: #2563eb;
-  --card-bg: #ffffff;
-  --card-border: rgba(0,0,0,0.08);
+  --background-color: #f8f8f8;
+  --text-color: #0a0a0a;
+  --text-muted-color: #666;
+  --accent-name-color: #2563eb;
+  --dock-active-color: #2563eb;
+  --card-background-color: #ffffff;
+  --card-border-color: rgba(0, 0, 0, 0.08);
+  --separator-color: rgba(0, 0, 0, 0.1);
 }
 
 html, body {
   width: 100%;
   min-height: 100vh;
-  background: var(--bg);
-  color: var(--text);
+  background: var(--background-color);
+  color: var(--text-color);
   font-family: 'Inter', sans-serif;
-  transition: background 0.6s var(--ease-in-out), color 0.6s var(--ease-in-out);
+  transition: background 0.6s var(--easing-in-out), color 0.6s var(--easing-in-out);
   overflow: hidden;
+}
+
+.cursor-glow {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 260px;
+  height: 260px;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9998;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(circle, rgba(91, 156, 246, 0.09) 0%, transparent 70%);
+  transition: opacity 0.4s var(--easing-standard);
+  will-change: transform;
+}
+
+[data-theme="light"] .cursor-glow {
+  background: radial-gradient(circle, rgba(37, 99, 235, 0.07) 0%, transparent 70%);
 }
 
 .theme-toggle {
@@ -51,25 +76,25 @@ html, body {
   background: none;
   border: none;
   cursor: pointer;
-  color: var(--text-muted);
+  color: var(--text-muted-color);
   font-size: 18px;
   padding: 6px;
   line-height: 1;
   border-radius: 50%;
-  transition: color 0.35s var(--ease), transform 0.5s var(--ease-out), background 0.3s var(--ease);
+  transition: color 0.35s var(--easing-standard), transform 0.5s var(--easing-out), background 0.3s var(--easing-standard);
 }
 
 .theme-toggle:hover {
-  color: var(--text);
+  color: var(--text-color);
   transform: rotate(25deg) scale(1.15);
-  background: rgba(255,255,255,0.06);
+  background: rgba(255, 255, 255, 0.06);
 }
 
 [data-theme="light"] .theme-toggle:hover {
-  background: rgba(0,0,0,0.06);
+  background: rgba(0, 0, 0, 0.06);
 }
 
-.pages {
+.pages-container {
   width: 100vw;
   height: 100vh;
   position: relative;
@@ -84,7 +109,7 @@ html, body {
   padding: 80px 90px 120px;
   opacity: 0;
   pointer-events: none;
-  transition: opacity 0.6s var(--ease-in-out), transform 0.6s var(--ease-out), filter 0.6s var(--ease-in-out);
+  transition: opacity 0.6s var(--easing-in-out), transform 0.6s var(--easing-out), filter 0.6s var(--easing-in-out);
   transform: translateX(48px);
   filter: blur(10px);
   will-change: transform, opacity, filter;
@@ -103,89 +128,123 @@ html, body {
   filter: blur(10px);
 }
 
-#home .hello-text {
+.greeting-text {
   font-family: 'Great Vibes', cursive;
   font-size: clamp(72px, 10vw, 130px);
-  color: var(--text);
+  color: var(--text-color);
   line-height: 1;
   margin-bottom: 18px;
   display: block;
   min-height: 1.1em;
 }
 
-.cursor {
+.typing-cursor {
   display: inline-block;
   width: 3px;
   height: 0.65em;
-  background: var(--text);
+  background: var(--text-color);
   margin-left: 2px;
   vertical-align: middle;
-  animation: blink 0.9s ease-in-out infinite;
+  animation: cursor-blink 0.9s ease-in-out infinite;
   border-radius: 1px;
 }
 
-@keyframes blink {
+@keyframes cursor-blink {
   0%, 100% { opacity: 1; }
   45%, 55% { opacity: 0; }
 }
 
-#home .subtitle {
+.intro-subtitle {
   font-size: 15px;
   font-weight: 500;
-  color: var(--text);
+  color: var(--text-color);
   opacity: 0;
   transform: translateY(10px);
-  transition: opacity 0.7s var(--ease-out), transform 0.7s var(--ease-out);
+  transition: opacity 0.7s var(--easing-out), transform 0.7s var(--easing-out);
   margin-bottom: 72px;
 }
 
-#home .subtitle.show {
+.intro-subtitle.show {
   opacity: 1;
   transform: translateY(0);
 }
 
-.subtitle .name {
-  color: var(--name-color);
+.intro-subtitle .highlighted-name {
+  color: var(--accent-name-color);
   font-weight: 600;
 }
 
-.about-block {
+.about-section {
   opacity: 0;
   transform: translateY(14px);
   filter: blur(4px);
-  transition: opacity 0.7s var(--ease-out) 0.1s, transform 0.7s var(--ease-out) 0.1s, filter 0.7s var(--ease-out) 0.1s;
+  transition: opacity 0.7s var(--easing-out) 0.1s, transform 0.7s var(--easing-out) 0.1s, filter 0.7s var(--easing-out) 0.1s;
 }
 
-.about-block.show {
+.about-section.show {
   opacity: 1;
   transform: translateY(0);
   filter: blur(0);
 }
 
-.about-block h2 {
+.about-section h2 {
   font-size: 18px;
   font-weight: 600;
   margin-bottom: 12px;
-  color: var(--text);
+  color: var(--text-color);
 }
 
-.about-block p {
+.about-section p {
   font-size: 14px;
-  color: var(--text-muted);
+  color: var(--text-muted-color);
   line-height: 1.8;
   max-width: 360px;
   font-weight: 300;
 }
 
-.about-block p strong {
-  color: var(--text);
+.about-section p strong {
+  color: var(--text-color);
   font-weight: 600;
   text-decoration: underline;
   text-decoration-color: #f59e0b;
   text-underline-offset: 3px;
 }
 
-.ts-row {
+.languages-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.language-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-muted-color);
+  border: 1px solid var(--card-border-color);
+  padding: 4px 10px;
+  border-radius: 999px;
+  transition: border-color 0.3s var(--easing-standard), color 0.3s var(--easing-standard);
+}
+
+.language-badge:hover {
+  color: var(--text-color);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+[data-theme="light"] .language-badge:hover {
+  border-color: rgba(0, 0, 0, 0.22);
+}
+
+.language-badge .flag-emoji {
+  font-size: 14px;
+  line-height: 1;
+}
+
+.stats-row {
   margin-top: 28px;
   display: flex;
   align-items: center;
@@ -193,62 +252,52 @@ html, body {
   opacity: 0;
   transform: translateY(14px);
   filter: blur(4px);
-  transition: opacity 0.7s var(--ease-out) 0.28s, transform 0.7s var(--ease-out) 0.28s, filter 0.7s var(--ease-out) 0.28s;
+  transition: opacity 0.7s var(--easing-out) 0.28s, transform 0.7s var(--easing-out) 0.28s, filter 0.7s var(--easing-out) 0.28s;
 }
 
-.ts-row.show {
+.stats-row.show {
   opacity: 1;
   transform: translateY(0);
   filter: blur(0);
 }
 
-.ts-item {
+.stat-item {
   display: flex;
   flex-direction: column;
   gap: 2px;
 }
 
-.ts-label {
+.stat-label {
   font-size: 10px;
   font-weight: 600;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: var(--text-muted);
+  color: var(--text-muted-color);
 }
 
-.ts-val {
+.stat-value {
   font-size: 13px;
-  color: var(--text);
+  color: var(--text-color);
   font-weight: 500;
 }
 
-.ts-sep {
+.stat-separator {
   width: 1px;
   height: 28px;
-  background: rgba(255,255,255,0.1);
+  background: var(--separator-color);
   border-radius: 1px;
 }
 
-[data-theme="light"] .ts-sep {
-  background: rgba(0,0,0,0.1);
-}
-
-#projects {
+#projects-page {
   overflow-y: auto;
   padding: 90px 72px 120px;
   scroll-behavior: smooth;
 }
 
-#projects::-webkit-scrollbar {
-  width: 3px;
-}
-
-#projects::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-#projects::-webkit-scrollbar-thumb {
-  background: rgba(255,255,255,0.08);
+#projects-page::-webkit-scrollbar { width: 3px; }
+#projects-page::-webkit-scrollbar-track { background: transparent; }
+#projects-page::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.08);
   border-radius: 99px;
 }
 
@@ -259,14 +308,14 @@ html, body {
 .projects-hero h1 {
   font-size: 32px;
   font-weight: 600;
-  color: var(--text);
+  color: var(--text-color);
   margin-bottom: 6px;
   letter-spacing: -0.5px;
 }
 
 .projects-hero p {
   font-size: 13px;
-  color: var(--text-muted);
+  color: var(--text-muted-color);
   font-weight: 300;
 }
 
@@ -277,13 +326,13 @@ html, body {
 .projects-section-title {
   font-size: 18px;
   font-weight: 600;
-  color: var(--text);
+  color: var(--text-color);
   margin-bottom: 4px;
 }
 
-.projects-section-sub {
+.projects-section-subtitle {
   font-size: 12px;
-  color: var(--text-muted);
+  color: var(--text-muted-color);
   margin-bottom: 20px;
   font-weight: 300;
 }
@@ -294,43 +343,44 @@ html, body {
   gap: 10px;
 }
 
-.proj-card {
-  background: var(--card-bg);
-  border: 1px solid var(--card-border);
+.project-card {
+  background: var(--card-background-color);
+  border: 1px solid var(--card-border-color);
   border-radius: 12px;
   display: flex;
   flex-direction: column;
   text-decoration: none;
-  color: var(--text);
+  color: var(--text-color);
   overflow: hidden;
-  transition: transform 0.35s var(--ease-out), box-shadow 0.35s var(--ease), border-color 0.3s var(--ease);
+  transition: transform 0.35s var(--easing-out), box-shadow 0.35s var(--easing-standard), border-color 0.3s var(--easing-standard);
+  cursor: pointer;
 }
 
-.proj-card:hover {
+.project-card:hover {
   transform: translateY(-3px);
-  box-shadow: 0 12px 40px rgba(0,0,0,0.35);
-  border-color: rgba(255,255,255,0.13);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
+  border-color: rgba(255, 255, 255, 0.13);
 }
 
-[data-theme="light"] .proj-card:hover {
-  box-shadow: 0 12px 40px rgba(0,0,0,0.09);
-  border-color: rgba(0,0,0,0.15);
+[data-theme="light"] .project-card:hover {
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.09);
+  border-color: rgba(0, 0, 0, 0.15);
 }
 
-.proj-thumb {
+.project-thumbnail {
   width: 100%;
   aspect-ratio: 16 / 9;
   object-fit: cover;
   display: block;
-  background: rgba(255,255,255,0.04);
-  border-bottom: 1px solid var(--card-border);
+  background: rgba(255, 255, 255, 0.04);
+  border-bottom: 1px solid var(--card-border-color);
 }
 
-[data-theme="light"] .proj-thumb {
-  background: rgba(0,0,0,0.04);
+[data-theme="light"] .project-thumbnail {
+  background: rgba(0, 0, 0, 0.04);
 }
 
-.proj-body {
+.project-card-body {
   padding: 16px 18px 18px;
   display: flex;
   flex-direction: column;
@@ -338,26 +388,26 @@ html, body {
   flex: 1;
 }
 
-.proj-card-header {
+.project-card-header {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
   gap: 8px;
 }
 
-.proj-card-name-wrap {
+.project-name-wrap {
   display: flex;
   align-items: center;
   gap: 5px;
 }
 
-.proj-card-name {
+.project-card-name {
   font-size: 13px;
   font-weight: 600;
-  color: var(--text);
+  color: var(--text-color);
 }
 
-.proj-card-icons {
+.project-card-icons {
   display: flex;
   align-items: center;
   gap: 6px;
@@ -365,23 +415,23 @@ html, body {
   margin-top: 1px;
 }
 
-.proj-card-icon-btn {
-  color: var(--text-muted);
+.project-icon-button {
+  color: var(--text-muted-color);
   opacity: 0.4;
   background: none;
   border: none;
   cursor: pointer;
   padding: 0;
   display: flex;
-  transition: opacity 0.25s var(--ease), transform 0.25s var(--ease-out), color 0.25s var(--ease);
+  transition: opacity 0.25s var(--easing-standard), transform 0.25s var(--easing-out), color 0.25s var(--easing-standard);
 }
 
-.proj-card-icon-btn:hover {
+.project-icon-button:hover {
   opacity: 0.9;
   transform: scale(1.1);
 }
 
-.proj-card-icon-btn svg {
+.project-icon-button svg {
   width: 13px;
   height: 13px;
   fill: none;
@@ -391,81 +441,81 @@ html, body {
   stroke-linejoin: round;
 }
 
-.proj-card:hover .proj-card-icon-btn {
+.project-card:hover .project-icon-button {
   opacity: 0.55;
 }
 
-.proj-card-desc {
+.project-card-description {
   font-size: 11px;
-  color: var(--text-muted);
+  color: var(--text-muted-color);
   line-height: 1.65;
   font-weight: 300;
   flex: 1;
 }
 
-.proj-card-role {
+.project-card-role {
   font-size: 11px;
-  color: var(--text-muted);
+  color: var(--text-muted-color);
   font-weight: 300;
 }
 
-.proj-card-role strong {
-  color: var(--text);
+.project-card-role strong {
+  color: var(--text-color);
   font-weight: 600;
 }
 
-.proj-tags {
+.project-tags-list {
   display: flex;
   flex-wrap: wrap;
   gap: 4px;
   margin-top: 8px;
 }
 
-.proj-tag {
+.project-tag {
   font-size: 10px;
   font-weight: 500;
-  color: var(--text-muted);
-  border: 1px solid rgba(255,255,255,0.09);
+  color: var(--text-muted-color);
+  border: 1px solid rgba(255, 255, 255, 0.09);
   padding: 2px 8px;
   border-radius: 999px;
-  transition: border-color 0.3s var(--ease);
+  transition: border-color 0.3s var(--easing-standard);
 }
 
-.proj-card:hover .proj-tag {
-  border-color: rgba(255,255,255,0.18);
+.project-card:hover .project-tag {
+  border-color: rgba(255, 255, 255, 0.18);
 }
 
-[data-theme="light"] .proj-tag {
-  border-color: rgba(0,0,0,0.11);
+[data-theme="light"] .project-tag {
+  border-color: rgba(0, 0, 0, 0.11);
 }
 
-[data-theme="light"] .proj-card:hover .proj-tag {
-  border-color: rgba(0,0,0,0.22);
+[data-theme="light"] .project-card:hover .project-tag {
+  border-color: rgba(0, 0, 0, 0.22);
 }
 
-.warn-wrap {
+.warning-wrapper {
   position: relative;
   display: inline-flex;
   align-items: center;
 }
 
-.warn-icon {
+.warning-icon {
   display: inline-flex;
   align-items: center;
   cursor: default;
   color: #f59e0b;
   opacity: 0.6;
-  transition: opacity 0.25s var(--ease), transform 0.3s var(--ease-out);
+  transition: opacity 0.25s var(--easing-standard), transform 0.3s var(--easing-out);
   line-height: 1;
   font-size: 0;
 }
 
-.warn-icon:hover {
+.warning-icon:hover {
   opacity: 1;
   transform: scale(1.15);
 }
 
-.warn-icon svg {
+.warning-icon svg {
   width: 11px;
   height: 11px;
   fill: none;
@@ -476,13 +526,13 @@ html, body {
   display: block;
 }
 
-.warn-tooltip {
+.warning-tooltip {
   position: absolute;
   top: calc(100% + 10px);
   left: 50%;
   transform: translateX(-50%) translateY(-6px);
   background: #1c1c1c;
-  border: 1px solid rgba(245,158,11,0.2);
+  border: 1px solid rgba(245, 158, 11, 0.2);
   color: #e0e0e0;
   font-size: 10px;
   font-weight: 400;
@@ -491,22 +541,22 @@ html, body {
   border-radius: 8px;
   pointer-events: none;
   opacity: 0;
-  transition: opacity 0.3s var(--ease-out), transform 0.3s var(--ease-out);
+  transition: opacity 0.3s var(--easing-out), transform 0.3s var(--easing-out);
   z-index: 200;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
   white-space: normal;
   text-align: center;
   width: 200px;
 }
 
-[data-theme="light"] .warn-tooltip {
+[data-theme="light"] .warning-tooltip {
   background: #fff;
-  border-color: rgba(245,158,11,0.3);
+  border-color: rgba(245, 158, 11, 0.3);
   color: #333;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
 }
 
-.warn-tooltip::after {
+.warning-tooltip::after {
   content: '';
   position: absolute;
   bottom: 100%;
@@ -516,16 +566,16 @@ html, body {
   border-bottom-color: #1c1c1c;
 }
 
-[data-theme="light"] .warn-tooltip::after {
+[data-theme="light"] .warning-tooltip::after {
   border-bottom-color: #fff;
 }
 
-.warn-wrap:hover .warn-tooltip {
+.warning-wrapper:hover .warning-tooltip {
   opacity: 1;
   transform: translateX(-50%) translateY(0);
 }
 
-.dock {
+.dock-nav {
   position: fixed;
   bottom: 32px;
   left: 50%;
@@ -539,34 +589,30 @@ html, body {
   -webkit-backdrop-filter: blur(24px);
   padding: 7px 9px;
   border-radius: 999px;
-  border: 1px solid rgba(255,255,255,0.07);
-  box-shadow: 0 8px 32px rgba(0,0,0,0.4), 0 1px 0 rgba(255,255,255,0.04) inset;
-  transition: box-shadow 0.4s var(--ease), background 0.6s var(--ease-in-out);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), 0 1px 0 rgba(255, 255, 255, 0.04) inset;
+  transition: box-shadow 0.4s var(--easing-standard), background 0.6s var(--easing-in-out);
 }
 
-[data-theme="light"] .dock {
-  background: rgba(210,210,210,0.85);
-  border-color: rgba(0,0,0,0.08);
-  box-shadow: 0 8px 32px rgba(0,0,0,0.1), 0 1px 0 rgba(255,255,255,0.6) inset;
+[data-theme="light"] .dock-nav {
+  background: rgba(210, 210, 210, 0.85);
+  border-color: rgba(0, 0, 0, 0.08);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1), 0 1px 0 rgba(255, 255, 255, 0.6) inset;
 }
 
-.dock-sep {
+.dock-separator {
   width: 1px;
   height: 24px;
-  background: rgba(255,255,255,0.09);
+  background: var(--separator-color);
   margin: 0 3px;
   border-radius: 1px;
 }
 
-[data-theme="light"] .dock-sep {
-  background: rgba(0,0,0,0.1);
-}
-
-.dock-btn {
+.dock-button {
   width: 42px;
   height: 42px;
   border-radius: 50%;
-  background: rgba(255,255,255,0.05);
+  background: rgba(255, 255, 255, 0.05);
   border: none;
   cursor: pointer;
   display: flex;
@@ -574,37 +620,37 @@ html, body {
   justify-content: center;
   color: #bbb;
   position: relative;
-  transition: background 0.3s var(--ease), color 0.3s var(--ease), transform 0.35s var(--ease-out), box-shadow 0.3s var(--ease);
+  transition: background 0.3s var(--easing-standard), color 0.3s var(--easing-standard), transform 0.35s var(--easing-out), box-shadow 0.3s var(--easing-standard);
 }
 
-[data-theme="light"] .dock-btn {
-  background: rgba(0,0,0,0.07);
+[data-theme="light"] .dock-button {
+  background: rgba(0, 0, 0, 0.07);
   color: #444;
 }
 
-.dock-btn:hover {
-  background: rgba(255,255,255,0.1);
+.dock-button:hover {
+  background: rgba(255, 255, 255, 0.1);
   color: #fff;
   transform: translateY(-3px) scale(1.08);
-  box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
 }
 
-[data-theme="light"] .dock-btn:hover {
-  background: rgba(0,0,0,0.12);
+[data-theme="light"] .dock-button:hover {
+  background: rgba(0, 0, 0, 0.12);
   color: #000;
-  box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
 }
 
-.dock-btn:active {
+.dock-button:active {
   transform: translateY(-1px) scale(1.02);
   transition-duration: 0.1s;
 }
 
-.dock-btn.active {
-  color: var(--dock-active);
+.dock-button.active {
+  color: var(--dock-active-color);
 }
 
-.dock-btn.active::after {
+.dock-button.active::after {
   content: '';
   position: absolute;
   bottom: -6px;
@@ -613,11 +659,11 @@ html, body {
   width: 4px;
   height: 4px;
   border-radius: 50%;
-  background: var(--dock-active);
+  background: var(--dock-active-color);
   opacity: 0.7;
 }
 
-.dock-btn svg {
+.dock-button svg {
   width: 18px;
   height: 18px;
   fill: none;
@@ -627,9 +673,7 @@ html, body {
   stroke-linejoin: round;
 }
 
-.dock-btn.discord-btn svg,
-.dock-btn.roblox-btn svg,
-.dock-btn.x-btn svg {
+.dock-button.icon-filled svg {
   fill: currentColor;
   stroke: none;
 }
@@ -639,7 +683,7 @@ html, body {
     padding: 60px 28px 120px;
   }
 
-  #projects {
+  #projects-page {
     padding: 70px 28px 120px;
   }
 
@@ -651,62 +695,68 @@ html, body {
 </head>
 <body>
 
+<div class="cursor-glow" id="cursor-glow"></div>
+
 <button class="theme-toggle" onclick="toggleTheme()"><span id="theme-icon">☀</span></button>
 
-<div class="pages">
-  <div class="page active" id="home">
-    <span class="hello-text" id="hello-el"></span>
-    <span class="subtitle" id="subtitle-el">My name is <span class="name">star</span></span>
-    <div class="about-block" id="about-el">
+<div class="pages-container">
+  <div class="page active" id="home-page">
+    <span class="greeting-text" id="greeting-text-el"></span>
+    <span class="intro-subtitle" id="intro-subtitle-el">My name is <span class="highlighted-name">star</span></span>
+    <div class="about-section" id="about-section-el">
       <h2>About Me</h2>
       <p>i'm a <strong>15 year old dumbass</strong> who makes things on the internet and gets demotivated after.</p>
-    </div>
-    <div class="ts-row" id="ts-el">
-      <div class="ts-item">
-        <span class="ts-label">age</span>
-        <span class="ts-val" id="age-el">—</span>
+      <div class="languages-row">
+        <span class="language-badge"><span class="flag-emoji">🇺🇸</span> English</span>
+        <span class="language-badge"><span class="flag-emoji">🇪🇸</span> Spanish</span>
       </div>
-      <div class="ts-sep"></div>
-      <div class="ts-item">
-        <span class="ts-label">until aug 16</span>
-        <span class="ts-val" id="cd-el">—</span>
+    </div>
+    <div class="stats-row" id="stats-row-el">
+      <div class="stat-item">
+        <span class="stat-label">age</span>
+        <span class="stat-value" id="age-value-el">—</span>
+      </div>
+      <div class="stat-separator"></div>
+      <div class="stat-item">
+        <span class="stat-label">until aug 16</span>
+        <span class="stat-value" id="countdown-value-el">—</span>
       </div>
     </div>
   </div>
 
-  <div class="page" id="projects">
+  <div class="page" id="projects-page">
     <div class="projects-hero">
       <h1>Projects</h1>
       <p>A collection of things I've built.</p>
     </div>
-    <div id="projects-sections"></div>
+    <div id="projects-sections-container"></div>
   </div>
 </div>
 
-<nav class="dock">
-  <button class="dock-btn active" id="btn-home" onclick="goTo('home')" title="Home">
+<nav class="dock-nav">
+  <button class="dock-button active" id="btn-home-page" onclick="goToPage('home-page')" title="Home">
     <svg viewBox="0 0 24 24"><path d="M3 9.75L12 3l9 6.75V21a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V9.75z"/><path d="M9 22V12h6v10"/></svg>
   </button>
-  <button class="dock-btn" id="btn-projects" onclick="goTo('projects')" title="Projects">
+  <button class="dock-button" id="btn-projects-page" onclick="goToPage('projects-page')" title="Projects">
     <svg viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
   </button>
-  <button class="dock-btn" title="Blog (coming soon)" style="opacity:0.28;cursor:not-allowed;">
+  <button class="dock-button" title="Blog (coming soon)" style="opacity:0.28;cursor:not-allowed;">
     <svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
   </button>
-  <div class="dock-sep"></div>
-  <button class="dock-btn discord-btn" onclick="window.open('https://discord.com/users/1143371202480590920','_blank')" title="Discord" style="color:#5865f2;">
+  <div class="dock-separator"></div>
+  <button class="dock-button icon-filled" onclick="window.open('https://discord.com/users/1143371202480590920','_blank')" title="Discord" style="color:#5865f2;">
     <svg viewBox="0 0 24 24"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057c.001.022.01.043.03.057a19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994a.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/></svg>
   </button>
-  <button class="dock-btn roblox-btn" onclick="window.open('https://www.roblox.com/users/449367437/profile?friendshipSourceType=PlayerSearch','_blank')" title="Roblox" style="color:#e8e8e8;">
+  <button class="dock-button icon-filled" onclick="window.open('https://www.roblox.com/users/449367437/profile?friendshipSourceType=PlayerSearch','_blank')" title="Roblox" style="color:#e8e8e8;">
     <svg viewBox="0 0 24 24" width="18" height="18"><path d="M5.007 0L0 18.832 18.993 24 24 5.168ZM15.37 15.863l-6.361-1.706 1.706-6.361 6.361 1.706Z"/></svg>
   </button>
-  <button class="dock-btn x-btn" onclick="window.open('https://x.com/ozam_gd','_blank')" title="X / Twitter" style="color:#e7e7e7;">
+  <button class="dock-button icon-filled" onclick="window.open('https://x.com/ozam_gd','_blank')" title="X / Twitter" style="color:#e7e7e7;">
     <svg viewBox="0 0 24 24" width="16" height="16"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.746l7.73-8.835L1.254 2.25H8.08l4.253 5.622 5.912-5.622Zm-1.161 17.52h1.833L7.084 4.126H5.117Z"/></svg>
   </button>
 </nav>
 
 <script>
-const SECTIONS = [
+const PROJECT_SECTIONS = [
   {
     title: "Development",
     sub: "Stuff I've made.",
@@ -745,176 +795,179 @@ const SECTIONS = [
   }
 ];
 
-function buildIconSVG(type) {
+const BIRTHDAY_DATE = new Date("2010-08-16T00:00:00");
+const GREETING = "hello!";
+const GREETING_TYPE_SPEED_BASE = 100;
+const GREETING_TYPE_SPEED_VARIANCE = 80;
+const GREETING_TYPE_START_DELAY = 400;
+
+const cursorGlowEl = document.getElementById("cursor-glow");
+let mouseX = 0, mouseY = 0;
+let glowX = 0, glowY = 0;
+
+document.addEventListener("mousemove", e => {
+  mouseX = e.clientX;
+  mouseY = e.clientY;
+});
+
+(function animateGlow() {
+  glowX += (mouseX - glowX) * 0.08;
+  glowY += (mouseY - glowY) * 0.08;
+  cursorGlowEl.style.left = glowX + "px";
+  cursorGlowEl.style.top = glowY + "px";
+  requestAnimationFrame(animateGlow);
+})();
+
+function buildLinkIconSVG(type) {
   if (type === "link") return `<svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>`;
   if (type === "github") return `<svg viewBox="0 0 24 24"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg>`;
   return "";
 }
 
-function buildCard(card) {
-  const el = card.link ? document.createElement("a") : document.createElement("div");
-  el.className = "proj-card";
+function buildProjectCard(card) {
+  const element = card.link ? document.createElement("a") : document.createElement("div");
+  element.className = "project-card";
 
   if (card.link) {
-    el.href = card.link;
-    el.target = "_blank";
-    el.rel = "noopener";
+    element.href = card.link;
+    element.target = "_blank";
+    element.rel = "noopener";
   }
 
-  let html = "";
+  const tagsHTML = card.tags?.length
+    ? `<div class="project-tags-list">${card.tags.map(tag => `<span class="project-tag">${tag}</span>`).join("")}</div>`
+    : "";
 
-  if (card.thumb) {
-    html += `<img class="proj-thumb" src="${card.thumb}" alt="${card.name} thumbnail" loading="lazy">`;
-  }
+  const warningHTML = card.warn
+    ? `<span class="warning-wrapper">
+        <span class="warning-icon">
+          <svg viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+        </span>
+        <span class="warning-tooltip">${card.warn}</span>
+      </span>`
+    : "";
 
-  html += `<div class="proj-body">`;
-  html += `<div class="proj-card-header">`;
-  html += `<div class="proj-card-name-wrap">`;
-  html += `<span class="proj-card-name">${card.name}</span>`;
+  const githubIconHTML = card.github
+    ? `<button class="project-icon-button" title="GitHub" onclick="event.preventDefault();event.stopPropagation();window.open('${card.github}','_blank')">${buildLinkIconSVG("github")}</button>`
+    : "";
 
-  if (card.warn) {
-    html += `<span class="warn-wrap">
-      <span class="warn-icon">
-        <svg viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
-      </span>
-      <span class="warn-tooltip">${card.warn}</span>
-    </span>`;
-  }
+  const linkIconHTML = card.link
+    ? `<span class="project-icon-button" style="cursor:default;">${buildLinkIconSVG("link")}</span>`
+    : "";
 
-  html += `</div>`;
-  html += `<div class="proj-card-icons">`;
+  element.innerHTML = `
+    ${card.thumb ? `<img class="project-thumbnail" src="${card.thumb}" alt="${card.name} thumbnail" loading="lazy">` : ""}
+    <div class="project-card-body">
+      <div class="project-card-header">
+        <div class="project-name-wrap">
+          <span class="project-card-name">${card.name}</span>
+          ${warningHTML}
+        </div>
+        <div class="project-card-icons">${githubIconHTML}${linkIconHTML}</div>
+      </div>
+      ${card.desc ? `<div class="project-card-description">${card.desc}</div>` : ""}
+      ${card.role ? `<div class="project-card-role"><strong>Role:</strong> ${card.role}</div>` : ""}
+      ${tagsHTML}
+    </div>
+  `;
 
-  if (card.github) {
-    html += `<button class="proj-card-icon-btn" title="GitHub" onclick="event.preventDefault();event.stopPropagation();window.open('${card.github}','_blank')">${buildIconSVG("github")}</button>`;
-  }
-
-  if (card.link) {
-    html += `<span class="proj-card-icon-btn" style="cursor:default;">${buildIconSVG("link")}</span>`;
-  }
-
-  html += `</div>`;
-  html += `</div>`;
-
-  if (card.desc) html += `<div class="proj-card-desc">${card.desc}</div>`;
-  if (card.role) html += `<div class="proj-card-role"><strong>Role:</strong> ${card.role}</div>`;
-
-  if (card.tags && card.tags.length) {
-    html += `<div class="proj-tags">${card.tags.map(tag => `<span class="proj-tag">${tag}</span>`).join("")}</div>`;
-  }
-
-  html += `</div>`;
-  el.innerHTML = html;
-  return el;
+  return element;
 }
 
-function renderSections() {
-  const container = document.getElementById("projects-sections");
-  container.innerHTML = "";
+function renderProjectSections() {
+  const container = document.getElementById("projects-sections-container");
 
-  SECTIONS.forEach(section => {
-    if (!section.cards || section.cards.length === 0) return;
+  PROJECT_SECTIONS.forEach(section => {
+    if (!section.cards?.length) return;
 
-    const wrap = document.createElement("div");
-    wrap.className = "projects-section";
-    wrap.innerHTML = `
+    const sectionEl = document.createElement("div");
+    sectionEl.className = "projects-section";
+    sectionEl.innerHTML = `
       <div class="projects-section-title">${section.title}</div>
-      <div class="projects-section-sub">${section.sub}</div>
+      <div class="projects-section-subtitle">${section.sub}</div>
     `;
 
     const grid = document.createElement("div");
     grid.className = "projects-grid";
+    section.cards.forEach(card => grid.appendChild(buildProjectCard(card)));
 
-    section.cards.forEach(card => {
-      grid.appendChild(buildCard(card));
-    });
-
-    wrap.appendChild(grid);
-    container.appendChild(wrap);
+    sectionEl.appendChild(grid);
+    container.appendChild(sectionEl);
   });
 }
 
-renderSections();
+renderProjectSections();
 
-const BIRTHDAY = new Date("2010-08-16T00:00:00");
-
-function tick() {
+function updateBirthdayStats() {
   const now = new Date();
-  const years = Math.floor((now - BIRTHDAY) / (365.25 * 86400000));
-  document.getElementById("age-el").textContent = `${years} yrs`;
+  const ageInYears = Math.floor((now - BIRTHDAY_DATE) / (365.25 * 86400000));
+  document.getElementById("age-value-el").textContent = `${ageInYears} yrs`;
 
   const nextBirthday = new Date(now.getFullYear(), 7, 16);
   if (nextBirthday < now) nextBirthday.setFullYear(now.getFullYear() + 1);
 
-  const diff = nextBirthday - now;
-  const days = Math.floor(diff / 86400000);
-  const hours = Math.floor((diff % 86400000) / 3600000);
-  const minutes = Math.floor((diff % 3600000) / 60000);
-  const seconds = Math.floor((diff % 60000) / 1000);
+  const timeRemaining = nextBirthday - now;
+  const days    = Math.floor(timeRemaining / 86400000);
+  const hours   = Math.floor((timeRemaining % 86400000) / 3600000);
+  const minutes = Math.floor((timeRemaining % 3600000) / 60000);
+  const seconds = Math.floor((timeRemaining % 60000) / 1000);
 
-  document.getElementById("cd-el").textContent =
+  document.getElementById("countdown-value-el").textContent =
     days > 0 ? `${days}d ${hours}h ${minutes}m` : `${hours}h ${minutes}m ${seconds}s`;
 }
 
-tick();
-setInterval(tick, 1000);
+updateBirthdayStats();
+setInterval(updateBirthdayStats, 1000);
 
-const word = "hello!";
-const helloEl = document.getElementById("hello-el");
-const cursor = document.createElement("span");
-cursor.className = "cursor";
+const greetingTextEl = document.getElementById("greeting-text-el");
+const typingCursorEl = document.createElement("span");
+typingCursorEl.className = "typing-cursor";
 
-let helloIndex = 0;
+let typingIndex = 0;
 
-function type() {
-  if (helloIndex < word.length) {
-    helloEl.textContent = word.slice(0, ++helloIndex);
-    helloEl.appendChild(cursor);
-    setTimeout(type, 100 + Math.random() * 80);
+function typeNextCharacter() {
+  if (typingIndex < GREETING_WORD.length) {
+    greetingTextEl.textContent = GREETING_WORD.slice(0, ++typingIndex);
+    greetingTextEl.appendChild(typingCursorEl);
+    setTimeout(typeNextCharacter, GREETING_TYPE_SPEED_BASE + Math.random() * GREETING_TYPE_SPEED_VARIANCE);
     return;
   }
 
   setTimeout(() => {
-    cursor.remove();
-    document.getElementById("subtitle-el").classList.add("show");
-
+    typingCursorEl.remove();
+    document.getElementById("intro-subtitle-el").classList.add("show");
     setTimeout(() => {
-      document.getElementById("about-el").classList.add("show");
-      document.getElementById("ts-el").classList.add("show");
+      document.getElementById("about-section-el").classList.add("show");
+      document.getElementById("stats-row-el").classList.add("show");
     }, 380);
   }, 320);
 }
 
-setTimeout(type, 400);
+setTimeout(typeNextCharacter, GREETING_TYPE_START_DELAY);
 
-let currentPage = "home";
+let currentPageId = "home-page";
 
-function goTo(id) {
-  if (id === currentPage) return;
+function goToPage(targetPageId) {
+  if (targetPageId === currentPageId) return;
 
-  const from = document.getElementById(currentPage);
-  const to = document.getElementById(id);
+  const fromPage = document.getElementById(currentPageId);
+  const toPage   = document.getElementById(targetPageId);
 
-  from.classList.remove("active");
-  from.classList.add("exit-left");
+  fromPage.classList.remove("active");
+  fromPage.classList.add("exit-left");
+  setTimeout(() => fromPage.classList.remove("exit-left"), 620);
 
-  setTimeout(() => {
-    from.classList.remove("exit-left");
-  }, 620);
+  setTimeout(() => toPage.classList.add("active"), 60);
 
-  setTimeout(() => {
-    to.classList.add("active");
-  }, 60);
+  document.getElementById(`btn-${currentPageId}`)?.classList.remove("active");
+  document.getElementById(`btn-${targetPageId}`)?.classList.add("active");
 
-  document.getElementById(`btn-${currentPage}`)?.classList.remove("active");
-  document.getElementById(`btn-${id}`)?.classList.add("active");
-
-  currentPage = id;
+  currentPageId = targetPageId;
 }
 
 function toggleTheme() {
-  const html = document.documentElement;
-  const isDark = html.getAttribute("data-theme") === "dark";
-  html.setAttribute("data-theme", isDark ? "light" : "dark");
+  const isDark = document.documentElement.getAttribute("data-theme") === "dark";
+  document.documentElement.setAttribute("data-theme", isDark ? "light" : "dark");
   document.getElementById("theme-icon").textContent = isDark ? "☾" : "☀";
 }
 </script>
