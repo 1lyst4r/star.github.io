@@ -20,7 +20,7 @@
   --text-muted-color: #888;
   --accent-name-color: #5b9cf6;
   --dock-active-color: #5b9cf6;
-  --card-background-color: #111111;
+  --card-background-color: rgba(17, 17, 17, 0.72);
   --card-border-color: rgba(255, 255, 255, 0.07);
   --separator-color: rgba(255, 255, 255, 0.1);
   --easing-standard: cubic-bezier(0.25, 0.46, 0.45, 0.94);
@@ -34,7 +34,7 @@
   --text-muted-color: #666;
   --accent-name-color: #2563eb;
   --dock-active-color: #2563eb;
-  --card-background-color: #ffffff;
+  --card-background-color: rgba(255, 255, 255, 0.72);
   --card-border-color: rgba(0, 0, 0, 0.08);
   --separator-color: rgba(0, 0, 0, 0.1);
 }
@@ -49,6 +49,31 @@ html, body {
   overflow: hidden;
 }
 
+body {
+  position: relative;
+}
+
+.background-blur {
+  position: fixed;
+  inset: -40px;
+  z-index: 0;
+  background:
+    radial-gradient(circle at 70% 45%, rgba(91, 156, 246, 0.18), transparent 22%),
+    radial-gradient(circle at 22% 20%, rgba(255, 255, 255, 0.08), transparent 18%),
+    linear-gradient(160deg, #050505 0%, #0a0a0a 48%, #030303 100%);
+  filter: blur(28px) saturate(115%);
+  transform: scale(1.08);
+  opacity: 0.95;
+  pointer-events: none;
+}
+
+[data-theme="light"] .background-blur {
+  background:
+    radial-gradient(circle at 70% 45%, rgba(37, 99, 235, 0.12), transparent 22%),
+    radial-gradient(circle at 22% 20%, rgba(255, 255, 255, 0.7), transparent 18%),
+    linear-gradient(160deg, #f7f7f7 0%, #ececec 48%, #fdfdfd 100%);
+}
+
 .cursor-glow {
   position: fixed;
   top: 0;
@@ -57,7 +82,7 @@ html, body {
   height: 260px;
   border-radius: 50%;
   pointer-events: none;
-  z-index: 9998;
+  z-index: 2;
   transform: translate(-50%, -50%);
   background: radial-gradient(circle, rgba(91, 156, 246, 0.09) 0%, transparent 70%);
   transition: opacity 0.4s var(--easing-standard);
@@ -98,6 +123,7 @@ html, body {
   width: 100vw;
   height: 100vh;
   position: relative;
+  z-index: 1;
   overflow: hidden;
 }
 
@@ -354,6 +380,8 @@ html, body {
   overflow: hidden;
   transition: transform 0.35s var(--easing-out), box-shadow 0.35s var(--easing-standard), border-color 0.3s var(--easing-standard);
   cursor: pointer;
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
 }
 
 .project-card:hover {
@@ -695,7 +723,12 @@ html, body {
 </head>
 <body>
 
+<div class="background-blur"></div>
 <div class="cursor-glow" id="cursor-glow"></div>
+
+<audio id="bg-music" autoplay loop preload="auto">
+  <source src="https://files.catbox.moe/4vtv6x.mp3" type="audio/mpeg">
+</audio>
 
 <button class="theme-toggle" onclick="toggleTheme()"><span id="theme-icon">☀</span></button>
 
@@ -802,15 +835,29 @@ const GREETING_TYPE_SPEED_VARIANCE = 80;
 const GREETING_TYPE_START_DELAY = 400;
 
 const cursorGlowEl = document.getElementById("cursor-glow");
+const backgroundMusicEl = document.getElementById("bg-music");
 let mouseX = 0;
 let mouseY = 0;
 let glowX = 0;
 let glowY = 0;
 
+backgroundMusicEl.volume = 0.35;
+
+function tryPlayBackgroundMusic() {
+  const playAttempt = backgroundMusicEl.play();
+
+  if (playAttempt && typeof playAttempt.catch === "function") {
+    playAttempt.catch(() => {});
+  }
+}
+
 document.addEventListener("mousemove", (event) => {
   mouseX = event.clientX;
   mouseY = event.clientY;
 });
+
+document.addEventListener("click", tryPlayBackgroundMusic, { once: true });
+document.addEventListener("keydown", tryPlayBackgroundMusic, { once: true });
 
 (function animateGlow() {
   glowX += (mouseX - glowX) * 0.08;
@@ -960,6 +1007,7 @@ function typeNextCharacter() {
 }
 
 setTimeout(typeNextCharacter, GREETING_TYPE_START_DELAY);
+tryPlayBackgroundMusic();
 
 let currentPageId = "home-page";
 
