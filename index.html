@@ -802,25 +802,33 @@ const GREETING_TYPE_SPEED_VARIANCE = 80;
 const GREETING_TYPE_START_DELAY = 400;
 
 const cursorGlowEl = document.getElementById("cursor-glow");
-let mouseX = 0, mouseY = 0;
-let glowX = 0, glowY = 0;
+let mouseX = 0;
+let mouseY = 0;
+let glowX = 0;
+let glowY = 0;
 
-document.addEventListener("mousemove", e => {
-  mouseX = e.clientX;
-  mouseY = e.clientY;
+document.addEventListener("mousemove", (event) => {
+  mouseX = event.clientX;
+  mouseY = event.clientY;
 });
 
 (function animateGlow() {
   glowX += (mouseX - glowX) * 0.08;
   glowY += (mouseY - glowY) * 0.08;
-  cursorGlowEl.style.left = glowX + "px";
-  cursorGlowEl.style.top = glowY + "px";
+  cursorGlowEl.style.left = `${glowX}px`;
+  cursorGlowEl.style.top = `${glowY}px`;
   requestAnimationFrame(animateGlow);
 })();
 
 function buildLinkIconSVG(type) {
-  if (type === "link") return `<svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>`;
-  if (type === "github") return `<svg viewBox="0 0 24 24"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg>`;
+  if (type === "link") {
+    return `<svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>`;
+  }
+
+  if (type === "github") {
+    return `<svg viewBox="0 0 24 24"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg>`;
+  }
+
   return "";
 }
 
@@ -835,7 +843,7 @@ function buildProjectCard(card) {
   }
 
   const tagsHTML = card.tags?.length
-    ? `<div class="project-tags-list">${card.tags.map(tag => `<span class="project-tag">${tag}</span>`).join("")}</div>`
+    ? `<div class="project-tags-list">${card.tags.map((tag) => `<span class="project-tag">${tag}</span>`).join("")}</div>`
     : "";
 
   const warningHTML = card.warn
@@ -848,7 +856,7 @@ function buildProjectCard(card) {
     : "";
 
   const githubIconHTML = card.github
-    ? `<button class="project-icon-button" title="GitHub" onclick="event.preventDefault();event.stopPropagation();window.open('${card.github}','_blank')">${buildLinkIconSVG("github")}</button>`
+    ? `<button class="project-icon-button" title="GitHub" onclick="event.preventDefault(); event.stopPropagation(); window.open('${card.github}', '_blank')">${buildLinkIconSVG("github")}</button>`
     : "";
 
   const linkIconHTML = card.link
@@ -877,8 +885,10 @@ function buildProjectCard(card) {
 function renderProjectSections() {
   const container = document.getElementById("projects-sections-container");
 
-  PROJECT_SECTIONS.forEach(section => {
-    if (!section.cards?.length) return;
+  PROJECT_SECTIONS.forEach((section) => {
+    if (!section.cards?.length) {
+      return;
+    }
 
     const sectionEl = document.createElement("div");
     sectionEl.className = "projects-section";
@@ -889,7 +899,10 @@ function renderProjectSections() {
 
     const grid = document.createElement("div");
     grid.className = "projects-grid";
-    section.cards.forEach(card => grid.appendChild(buildProjectCard(card)));
+
+    section.cards.forEach((card) => {
+      grid.appendChild(buildProjectCard(card));
+    });
 
     sectionEl.appendChild(grid);
     container.appendChild(sectionEl);
@@ -904,11 +917,13 @@ function updateBirthdayStats() {
   document.getElementById("age-value-el").textContent = `${ageInYears} yrs`;
 
   const nextBirthday = new Date(now.getFullYear(), 7, 16);
-  if (nextBirthday < now) nextBirthday.setFullYear(now.getFullYear() + 1);
+  if (nextBirthday < now) {
+    nextBirthday.setFullYear(now.getFullYear() + 1);
+  }
 
   const timeRemaining = nextBirthday - now;
-  const days    = Math.floor(timeRemaining / 86400000);
-  const hours   = Math.floor((timeRemaining % 86400000) / 3600000);
+  const days = Math.floor(timeRemaining / 86400000);
+  const hours = Math.floor((timeRemaining % 86400000) / 3600000);
   const minutes = Math.floor((timeRemaining % 3600000) / 60000);
   const seconds = Math.floor((timeRemaining % 60000) / 1000);
 
@@ -926,8 +941,8 @@ typingCursorEl.className = "typing-cursor";
 let typingIndex = 0;
 
 function typeNextCharacter() {
-  if (typingIndex < GREETING_WORD.length) {
-    greetingTextEl.textContent = GREETING_WORD.slice(0, ++typingIndex);
+  if (typingIndex < GREETING.length) {
+    greetingTextEl.textContent = GREETING.slice(0, ++typingIndex);
     greetingTextEl.appendChild(typingCursorEl);
     setTimeout(typeNextCharacter, GREETING_TYPE_SPEED_BASE + Math.random() * GREETING_TYPE_SPEED_VARIANCE);
     return;
@@ -936,6 +951,7 @@ function typeNextCharacter() {
   setTimeout(() => {
     typingCursorEl.remove();
     document.getElementById("intro-subtitle-el").classList.add("show");
+
     setTimeout(() => {
       document.getElementById("about-section-el").classList.add("show");
       document.getElementById("stats-row-el").classList.add("show");
@@ -948,10 +964,12 @@ setTimeout(typeNextCharacter, GREETING_TYPE_START_DELAY);
 let currentPageId = "home-page";
 
 function goToPage(targetPageId) {
-  if (targetPageId === currentPageId) return;
+  if (targetPageId === currentPageId) {
+    return;
+  }
 
   const fromPage = document.getElementById(currentPageId);
-  const toPage   = document.getElementById(targetPageId);
+  const toPage = document.getElementById(targetPageId);
 
   fromPage.classList.remove("active");
   fromPage.classList.add("exit-left");
