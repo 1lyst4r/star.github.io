@@ -59,6 +59,7 @@ body {
   z-index: 0;
   overflow: hidden;
   background: #050505;
+  transition: background 0.6s var(--easing-in-out);
 }
 
 .background-video {
@@ -67,8 +68,23 @@ body {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  opacity: 0.22;
+  opacity: 0;
   transform: scale(1.02);
+  transition: opacity 0.8s var(--easing-in-out), transform 1.2s var(--easing-out);
+  will-change: opacity, transform;
+}
+
+.background-video.is-visible {
+  opacity: 0.24;
+  transform: scale(1);
+}
+
+[data-theme="light"] .background-media {
+  background: #f8f8f8;
+}
+
+[data-theme="light"] .background-video.is-visible {
+  opacity: 0.42;
 }
 
 .background-blur {
@@ -681,6 +697,11 @@ body {
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
 }
 
+[data-theme="light"] .dock-button[title="Roblox"],
+[data-theme="light"] .dock-button[title="X / Twitter"] {
+  color: #111 !important;
+}
+
 .dock-button:active {
   transform: translateY(-1px) scale(1.02);
   transition-duration: 0.1s;
@@ -736,15 +757,18 @@ body {
 <body>
 
 <div class="background-media">
-  <video class="background-video" autoplay muted loop playsinline>
+  <video class="background-video is-visible" id="dark-bg-video" autoplay muted loop playsinline>
     <source src="https://files.catbox.moe/k7dbli.mp4" type="video/mp4">
+  </video>
+  <video class="background-video" id="light-bg-video" autoplay muted loop playsinline>
+    <source src="https://files.catbox.moe/r8o3bv.mp4" type="video/mp4">
   </video>
   <div class="background-blur"></div>
 </div>
 
 <div class="cursor-glow" id="cursor-glow"></div>
 
-<button class="theme-toggle" onclick="toggleTheme()"><span id="theme-icon">☀</span></button>
+<button class="theme-toggle" onclick="swapTheme()" aria-label="Toggle theme"><span id="theme-icon">&#9728;</span></button>
 
 <div class="pages-container">
   <div class="page active" id="home-page">
@@ -754,19 +778,19 @@ body {
       <h2>About Me</h2>
       <p>i'm a <strong>15 year old dumbass</strong> who makes things on the internet and gets demotivated after.</p>
       <div class="languages-row">
-        <span class="language-badge"><span class="flag-emoji">🇺🇸</span> English</span>
-        <span class="language-badge"><span class="flag-emoji">🇪🇸</span> Spanish</span>
+        <span class="language-badge"><span class="flag-emoji">US</span> English</span>
+        <span class="language-badge"><span class="flag-emoji">ES</span> Spanish</span>
       </div>
     </div>
     <div class="stats-row" id="stats-row-el">
       <div class="stat-item">
         <span class="stat-label">age</span>
-        <span class="stat-value" id="age-value-el">—</span>
+        <span class="stat-value" id="age-value-el">-</span>
       </div>
       <div class="stat-separator"></div>
       <div class="stat-item">
         <span class="stat-label">until aug 16</span>
-        <span class="stat-value" id="countdown-value-el">—</span>
+        <span class="stat-value" id="countdown-value-el">-</span>
       </div>
     </div>
   </div>
@@ -781,10 +805,10 @@ body {
 </div>
 
 <nav class="dock-nav">
-  <button class="dock-button active" id="btn-home-page" onclick="goToPage('home-page')" title="Home">
+  <button class="dock-button active" id="btn-home-page" onclick="switchPage('home-page')" title="Home">
     <svg viewBox="0 0 24 24"><path d="M3 9.75L12 3l9 6.75V21a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V9.75z"/><path d="M9 22V12h6v10"/></svg>
   </button>
-  <button class="dock-button" id="btn-projects-page" onclick="goToPage('projects-page')" title="Projects">
+  <button class="dock-button" id="btn-projects-page" onclick="switchPage('projects-page')" title="Projects">
     <svg viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
   </button>
   <button class="dock-button" title="Blog (coming soon)" style="opacity:0.28;cursor:not-allowed;">
@@ -803,16 +827,23 @@ body {
 </nav>
 
 <script>
-const PROJECT_SECTIONS = [
+const stuffIveBuilt = [
   {
     title: "Development",
     sub: "Stuff I've made.",
     cards: [
       {
         name: "star's bot",
-        desc: "Discord bot application — basic QoL stuff lol",
+        desc: "Discord bot application - basic QoL stuff lol",
         tags: ["Discord Bot", "JavaScript"],
         link: "https://discord.com/users/1500680986164203720",
+        thumb: "https://i.imgur.com/HBZExRo.png"
+      },
+      {
+        name: "LexBot",
+        desc: "Another discord bot i made but better than stars bot",
+        tags: ["Discord Bot", "JavaScript"],
+        link: "https://discord.com/users/1507513951708254268",
         thumb: "https://i.imgur.com/HBZExRo.png"
       }
     ]
@@ -842,13 +873,16 @@ const PROJECT_SECTIONS = [
   }
 ];
 
-const BIRTHDAY_DATE = new Date("2010-08-16T00:00:00");
-const GREETING = "hello!";
-const GREETING_TYPE_SPEED_BASE = 100;
-const GREETING_TYPE_SPEED_VARIANCE = 80;
-const GREETING_TYPE_START_DELAY = 400;
+const birthday = new Date("2010-08-16T00:00:00");
+const helloText = "hello!";
+const typingSpeedBase = 100;
+const typingSpeedRandomness = 80;
+const typingStartsAfter = 400;
 
 const cursorGlowEl = document.getElementById("cursor-glow");
+const darkBgVideo = document.getElementById("dark-bg-video");
+const lightBgVideo = document.getElementById("light-bg-video");
+const themeIconEl = document.getElementById("theme-icon");
 let mouseX = 0;
 let mouseY = 0;
 let glowX = 0;
@@ -932,7 +966,7 @@ function buildProjectCard(card) {
 function renderProjectSections() {
   const container = document.getElementById("projects-sections-container");
 
-  PROJECT_SECTIONS.forEach((section) => {
+  stuffIveBuilt.forEach((section) => {
     if (!section.cards?.length) {
       return;
     }
@@ -960,7 +994,7 @@ renderProjectSections();
 
 function updateBirthdayStats() {
   const now = new Date();
-  const ageInYears = Math.floor((now - BIRTHDAY_DATE) / (365.25 * 86400000));
+  const ageInYears = Math.floor((now - birthday) / (365.25 * 86400000));
   document.getElementById("age-value-el").textContent = `${ageInYears} yrs`;
 
   const nextBirthday = new Date(now.getFullYear(), 7, 16);
@@ -988,10 +1022,10 @@ typingCursorEl.className = "typing-cursor";
 let typingIndex = 0;
 
 function typeNextCharacter() {
-  if (typingIndex < GREETING.length) {
-    greetingTextEl.textContent = GREETING.slice(0, ++typingIndex);
+  if (typingIndex < helloText.length) {
+    greetingTextEl.textContent = helloText.slice(0, ++typingIndex);
     greetingTextEl.appendChild(typingCursorEl);
-    setTimeout(typeNextCharacter, GREETING_TYPE_SPEED_BASE + Math.random() * GREETING_TYPE_SPEED_VARIANCE);
+    setTimeout(typeNextCharacter, typingSpeedBase + Math.random() * typingSpeedRandomness);
     return;
   }
 
@@ -1006,34 +1040,44 @@ function typeNextCharacter() {
   }, 320);
 }
 
-setTimeout(typeNextCharacter, GREETING_TYPE_START_DELAY);
+setTimeout(typeNextCharacter, typingStartsAfter);
 
-let currentPageId = "home-page";
+let currentPage = "home-page";
 
-function goToPage(targetPageId) {
-  if (targetPageId === currentPageId) {
+function switchPage(nextPage) {
+  if (nextPage === currentPage) {
     return;
   }
 
-  const fromPage = document.getElementById(currentPageId);
-  const toPage = document.getElementById(targetPageId);
+  const pageLeaving = document.getElementById(currentPage);
+  const pageComingIn = document.getElementById(nextPage);
 
-  fromPage.classList.remove("active");
-  fromPage.classList.add("exit-left");
-  setTimeout(() => fromPage.classList.remove("exit-left"), 620);
+  pageLeaving.classList.remove("active");
+  pageLeaving.classList.add("exit-left");
+  setTimeout(() => pageLeaving.classList.remove("exit-left"), 620);
 
-  setTimeout(() => toPage.classList.add("active"), 60);
+  setTimeout(() => pageComingIn.classList.add("active"), 60);
 
-  document.getElementById(`btn-${currentPageId}`)?.classList.remove("active");
-  document.getElementById(`btn-${targetPageId}`)?.classList.add("active");
+  document.getElementById(`btn-${currentPage}`)?.classList.remove("active");
+  document.getElementById(`btn-${nextPage}`)?.classList.add("active");
 
-  currentPageId = targetPageId;
+  currentPage = nextPage;
 }
 
-function toggleTheme() {
-  const isDark = document.documentElement.getAttribute("data-theme") === "dark";
-  document.documentElement.setAttribute("data-theme", isDark ? "light" : "dark");
-  document.getElementById("theme-icon").textContent = isDark ? "☾" : "☀";
+function setTheme(nextTheme) {
+  const lightModeIsOn = nextTheme === "light";
+
+  document.documentElement.setAttribute("data-theme", nextTheme);
+  themeIconEl.innerHTML = lightModeIsOn ? "&#9790;" : "&#9728;";
+  darkBgVideo.classList.toggle("is-visible", !lightModeIsOn);
+  lightBgVideo.classList.toggle("is-visible", lightModeIsOn);
+  darkBgVideo.play().catch(() => {});
+  lightBgVideo.play().catch(() => {});
+}
+
+function swapTheme() {
+  const currentTheme = document.documentElement.getAttribute("data-theme");
+  setTheme(currentTheme === "dark" ? "light" : "dark");
 }
 </script>
 </body>
