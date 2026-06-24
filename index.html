@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="en" data-theme="dark">
 <head>
@@ -6,7 +7,7 @@
 <title>star</title>
 <link rel="icon" type="image/png" href="https://i.imgur.com/mmfpBkh.jpeg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
 *, *::before, *::after {
   box-sizing: border-box;
@@ -123,6 +124,120 @@ body {
   background: radial-gradient(circle, rgba(37, 99, 235, 0.07) 0%, transparent 70%);
 }
 
+.confetti-canvas {
+  position: fixed;
+  inset: 0;
+  z-index: 220;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.4s var(--easing-standard);
+}
+
+.confetti-canvas.active {
+  opacity: 1;
+}
+
+.birthday-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 300;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: rgba(0, 0, 0, 0.48);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.45s var(--easing-standard);
+}
+
+.birthday-overlay.show {
+  opacity: 1;
+  pointer-events: all;
+}
+
+.birthday-message-card {
+  width: min(520px, 100%);
+  position: relative;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(12, 12, 12, 0.78);
+  border-radius: 18px;
+  padding: 34px 34px 32px;
+  box-shadow: 0 28px 80px rgba(0, 0, 0, 0.45);
+  transform: translateY(18px) scale(0.96);
+  opacity: 0;
+  transition: opacity 0.5s var(--easing-out), transform 0.5s var(--easing-out);
+}
+
+.birthday-overlay.show .birthday-message-card {
+  transform: translateY(0) scale(1);
+  opacity: 1;
+}
+
+[data-theme="light"] .birthday-message-card {
+  background: rgba(255, 255, 255, 0.84);
+  border-color: rgba(0, 0, 0, 0.1);
+  box-shadow: 0 28px 80px rgba(0, 0, 0, 0.14);
+}
+
+.birthday-close-button {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 34px;
+  height: 34px;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  color: var(--text-color);
+  background: rgba(255, 255, 255, 0.07);
+  font-size: 24px;
+  line-height: 1;
+  transition: background 0.25s var(--easing-standard), transform 0.25s var(--easing-out);
+}
+
+.birthday-close-button:hover {
+  background: rgba(255, 255, 255, 0.14);
+  transform: scale(1.08);
+}
+
+[data-theme="light"] .birthday-close-button {
+  background: rgba(0, 0, 0, 0.07);
+}
+
+[data-theme="light"] .birthday-close-button:hover {
+  background: rgba(0, 0, 0, 0.12);
+}
+
+.birthday-message-eyebrow {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--accent-name-color);
+  margin-bottom: 12px;
+}
+
+.birthday-message-card h2 {
+  font-size: clamp(30px, 5vw, 48px);
+  font-weight: 700;
+  letter-spacing: 0;
+  line-height: 1;
+  color: var(--text-color);
+  margin-bottom: 18px;
+}
+
+.birthday-message-card p {
+  font-size: 15px;
+  line-height: 1.8;
+  font-weight: 400;
+  white-space: pre-line;
+  color: var(--text-muted-color);
+}
+
 .theme-toggle {
   position: fixed;
   top: 22px;
@@ -184,6 +299,17 @@ body {
   filter: blur(10px);
 }
 
+#home-page {
+  overflow-y: auto;
+}
+
+#home-page::-webkit-scrollbar { width: 3px; }
+#home-page::-webkit-scrollbar-track { background: transparent; }
+#home-page::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 99px;
+}
+
 .greeting-text {
   font-family: 'Great Vibes', cursive;
   font-size: clamp(72px, 10vw, 130px);
@@ -217,7 +343,7 @@ body {
   opacity: 0;
   transform: translateY(10px);
   transition: opacity 0.7s var(--easing-out), transform 0.7s var(--easing-out);
-  margin-bottom: 72px;
+  margin-bottom: 34px;
 }
 
 .intro-subtitle.show {
@@ -228,6 +354,72 @@ body {
 .intro-subtitle .highlighted-name {
   color: var(--accent-name-color);
   font-weight: 600;
+}
+
+.birthday-countdown {
+  width: min(940px, 100%);
+  margin-bottom: 42px;
+  opacity: 0;
+  transform: translateY(18px);
+  filter: blur(5px);
+  transition: opacity 0.75s var(--easing-out), transform 0.75s var(--easing-out), filter 0.75s var(--easing-out);
+}
+
+.birthday-countdown.show {
+  opacity: 1;
+  transform: translateY(0);
+  filter: blur(0);
+}
+
+.countdown-kicker {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-muted-color);
+  margin-bottom: 14px;
+}
+
+.countdown-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.countdown-unit {
+  min-width: 0;
+  padding: 18px 18px 16px;
+  border-radius: 16px;
+  border: 1px solid var(--card-border-color);
+  background: rgba(255, 255, 255, 0.035);
+  overflow: hidden;
+  box-shadow: 0 18px 55px rgba(0, 0, 0, 0.18);
+}
+
+[data-theme="light"] .countdown-unit {
+  background: rgba(255, 255, 255, 0.58);
+  box-shadow: 0 18px 55px rgba(0, 0, 0, 0.07);
+}
+
+.countdown-number {
+  display: block;
+  font-size: clamp(48px, 8vw, 96px);
+  font-weight: 700;
+  letter-spacing: 0;
+  line-height: 0.86;
+  color: var(--text-color);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.countdown-label {
+  display: block;
+  margin-top: 13px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-muted-color);
 }
 
 .about-section {
@@ -758,6 +950,31 @@ body {
   .projects-grid {
     grid-template-columns: 1fr;
   }
+
+  .countdown-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .countdown-number {
+    font-size: clamp(54px, 18vw, 88px);
+  }
+
+  .dock-nav {
+    bottom: 22px;
+    max-width: calc(100vw - 24px);
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .dock-nav::-webkit-scrollbar {
+    display: none;
+  }
+
+  .dock-button {
+    width: 38px;
+    height: 38px;
+    flex: 0 0 38px;
+  }
 }
 </style>
 </head>
@@ -774,6 +991,16 @@ body {
 </div>
 
 <div class="cursor-glow" id="cursor-glow"></div>
+<canvas class="confetti-canvas" id="confetti-canvas"></canvas>
+
+<div class="birthday-overlay" id="birthday-overlay" aria-hidden="true">
+  <div class="birthday-message-card" role="dialog" aria-modal="true" aria-labelledby="birthday-message-title">
+    <button class="birthday-close-button" onclick="closeBirthdayMessage()" aria-label="Close birthday message">&times;</button>
+    <div class="birthday-message-eyebrow">august 16</div>
+    <h2 id="birthday-message-title"></h2>
+    <p id="birthday-message-body"></p>
+  </div>
+</div>
 
 <button class="theme-toggle" onclick="swapTheme()" aria-label="Toggle theme"><span id="theme-icon">&#9728;</span></button>
 
@@ -781,6 +1008,25 @@ body {
   <div class="page active" id="home-page">
     <span class="greeting-text" id="greeting-text-el"></span>
     <span class="intro-subtitle" id="intro-subtitle-el">My name is <span class="highlighted-name">star</span></span>
+
+    <div class="birthday-countdown" id="countdown-showcase-el">
+      <div class="countdown-kicker">until aug 16 at 12:00 am</div>
+      <div class="countdown-grid" aria-label="Countdown to August 16">
+        <div class="countdown-unit">
+          <span class="countdown-number" id="countdown-hours-el">0</span>
+          <span class="countdown-label">Hours</span>
+        </div>
+        <div class="countdown-unit">
+          <span class="countdown-number" id="countdown-minutes-el">00</span>
+          <span class="countdown-label">Minutes</span>
+        </div>
+        <div class="countdown-unit">
+          <span class="countdown-number" id="countdown-seconds-el">00</span>
+          <span class="countdown-label">Seconds</span>
+        </div>
+      </div>
+    </div>
+
     <div class="about-section" id="about-section-el">
       <h2>About Me</h2>
       <p>i'm a <strong>15 year old dumbass</strong> who makes things on the internet and gets demotivated after.</p>
@@ -789,15 +1035,11 @@ body {
         <span class="language-badge"><span class="flag-emoji">ES</span> Spanish</span>
       </div>
     </div>
+
     <div class="stats-row" id="stats-row-el">
       <div class="stat-item">
         <span class="stat-label">age</span>
         <span class="stat-value" id="age-value-el">-</span>
-      </div>
-      <div class="stat-separator"></div>
-      <div class="stat-item">
-        <span class="stat-label">until aug 16</span>
-        <span class="stat-value" id="countdown-value-el">-</span>
       </div>
     </div>
   </div>
@@ -817,6 +1059,9 @@ body {
   </button>
   <button class="dock-button" id="btn-projects-page" onclick="switchPage('projects-page')" title="Projects">
     <svg viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+  </button>
+  <button class="dock-button" onclick="openBirthdayMessage()" title="Birthday note">
+    <svg viewBox="0 0 24 24"><path d="M8 2v4"/><path d="M12 2v4"/><path d="M16 2v4"/><path d="M6 4h12a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z"/><path d="M8 11h8"/><path d="M8 15h6"/></svg>
   </button>
   <button class="dock-button" title="Blog (coming soon)" style="opacity:0.28;cursor:not-allowed;">
     <svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
@@ -881,6 +1126,16 @@ const stuffIveBuilt = [
 ];
 
 const birthday = new Date("2010-08-16T00:00:00");
+const birthdayCountdownTarget = new Date("2026-08-16T00:00:00");
+
+// Edit this text.
+const birthdayPopupText = {
+  title: "Happy Birthday!",
+  body: `Today is finally here.
+
+Thank you for being here.`
+};
+
 const helloText = "hello!";
 const typingSpeedBase = 100;
 const typingSpeedRandomness = 80;
@@ -890,10 +1145,16 @@ const cursorGlowEl = document.getElementById("cursor-glow");
 const darkBgVideo = document.getElementById("dark-bg-video");
 const lightBgVideo = document.getElementById("light-bg-video");
 const themeIconEl = document.getElementById("theme-icon");
+const confettiCanvas = document.getElementById("confetti-canvas");
+const confettiContext = confettiCanvas.getContext("2d");
 let mouseX = 0;
 let mouseY = 0;
 let glowX = 0;
 let glowY = 0;
+let birthdayCelebrationStarted = false;
+let confettiPieces = [];
+let confettiAnimationFrame = null;
+let confettiEndTime = 0;
 
 document.addEventListener("mousemove", (event) => {
   mouseX = event.clientX;
@@ -907,6 +1168,109 @@ document.addEventListener("mousemove", (event) => {
   cursorGlowEl.style.top = `${glowY}px`;
   requestAnimationFrame(animateGlow);
 })();
+
+function renderBirthdayMessage() {
+  document.getElementById("birthday-message-title").textContent = birthdayPopupText.title;
+  document.getElementById("birthday-message-body").textContent = birthdayPopupText.body;
+}
+
+function openBirthdayMessage() {
+  renderBirthdayMessage();
+  const overlay = document.getElementById("birthday-overlay");
+  overlay.classList.add("show");
+  overlay.setAttribute("aria-hidden", "false");
+}
+
+function closeBirthdayMessage() {
+  const overlay = document.getElementById("birthday-overlay");
+  overlay.classList.remove("show");
+  overlay.setAttribute("aria-hidden", "true");
+}
+
+document.getElementById("birthday-overlay").addEventListener("click", (event) => {
+  if (event.target.id === "birthday-overlay") {
+    closeBirthdayMessage();
+  }
+});
+
+document.addEventListener("keydown", (event) => {
+  if (event.key === "Escape") {
+    closeBirthdayMessage();
+  }
+});
+
+function resizeConfettiCanvas() {
+  const scale = Math.min(window.devicePixelRatio || 1, 2);
+  confettiCanvas.width = window.innerWidth * scale;
+  confettiCanvas.height = window.innerHeight * scale;
+  confettiContext.setTransform(scale, 0, 0, scale, 0, 0);
+}
+
+window.addEventListener("resize", resizeConfettiCanvas);
+resizeConfettiCanvas();
+
+function createConfettiPiece() {
+  const colors = ["#ffffff", "#5b9cf6", "#f59e0b", "#22c55e", "#ef4444", "#a855f7", "#f472b6"];
+
+  return {
+    x: Math.random() * window.innerWidth,
+    y: -30 - Math.random() * window.innerHeight * 0.7,
+    width: 5 + Math.random() * 8,
+    height: 10 + Math.random() * 14,
+    color: colors[Math.floor(Math.random() * colors.length)],
+    velocityX: -1.6 + Math.random() * 3.2,
+    velocityY: 2 + Math.random() * 4.8,
+    rotation: Math.random() * Math.PI * 2,
+    rotationSpeed: -0.18 + Math.random() * 0.36,
+    swing: Math.random() * Math.PI * 2
+  };
+}
+
+function launchBirthdayConfetti() {
+  resizeConfettiCanvas();
+  confettiCanvas.classList.add("active");
+  confettiPieces = Array.from({ length: 260 }, createConfettiPiece);
+  confettiEndTime = performance.now() + 7200;
+
+  if (!confettiAnimationFrame) {
+    confettiAnimationFrame = requestAnimationFrame(animateConfetti);
+  }
+}
+
+function animateConfetti(now) {
+  confettiContext.clearRect(0, 0, window.innerWidth, window.innerHeight);
+
+  if (now < confettiEndTime && confettiPieces.length < 460) {
+    for (let i = 0; i < 9; i++) {
+      confettiPieces.push(createConfettiPiece());
+    }
+  }
+
+  confettiPieces.forEach((piece) => {
+    piece.x += piece.velocityX + Math.sin(now / 240 + piece.swing) * 0.7;
+    piece.y += piece.velocityY;
+    piece.velocityY += 0.015;
+    piece.rotation += piece.rotationSpeed;
+
+    confettiContext.save();
+    confettiContext.translate(piece.x, piece.y);
+    confettiContext.rotate(piece.rotation);
+    confettiContext.fillStyle = piece.color;
+    confettiContext.fillRect(-piece.width / 2, -piece.height / 2, piece.width, piece.height);
+    confettiContext.restore();
+  });
+
+  confettiPieces = confettiPieces.filter((piece) => piece.y < window.innerHeight + 60);
+
+  if (confettiPieces.length || now < confettiEndTime) {
+    confettiAnimationFrame = requestAnimationFrame(animateConfetti);
+    return;
+  }
+
+  confettiContext.clearRect(0, 0, window.innerWidth, window.innerHeight);
+  confettiCanvas.classList.remove("active");
+  confettiAnimationFrame = null;
+}
 
 function buildLinkIconSVG(type) {
   if (type === "link") {
@@ -998,25 +1362,27 @@ function renderProjectSections() {
 }
 
 renderProjectSections();
+renderBirthdayMessage();
 
 function updateBirthdayStats() {
   const now = new Date();
   const ageInYears = Math.floor((now - birthday) / (365.25 * 86400000));
   document.getElementById("age-value-el").textContent = `${ageInYears} yrs`;
 
-  const nextBirthday = new Date(now.getFullYear(), 7, 16);
-  if (nextBirthday < now) {
-    nextBirthday.setFullYear(now.getFullYear() + 1);
+  const totalSecondsLeft = Math.max(0, Math.floor((birthdayCountdownTarget - now) / 1000));
+  const hours = Math.floor(totalSecondsLeft / 3600);
+  const minutes = Math.floor((totalSecondsLeft % 3600) / 60);
+  const seconds = totalSecondsLeft % 60;
+
+  document.getElementById("countdown-hours-el").textContent = hours.toLocaleString("en-US");
+  document.getElementById("countdown-minutes-el").textContent = String(minutes).padStart(2, "0");
+  document.getElementById("countdown-seconds-el").textContent = String(seconds).padStart(2, "0");
+
+  if (totalSecondsLeft === 0 && !birthdayCelebrationStarted) {
+    birthdayCelebrationStarted = true;
+    launchBirthdayConfetti();
+    openBirthdayMessage();
   }
-
-  const timeRemaining = nextBirthday - now;
-  const days = Math.floor(timeRemaining / 86400000);
-  const hours = Math.floor((timeRemaining % 86400000) / 3600000);
-  const minutes = Math.floor((timeRemaining % 3600000) / 60000);
-  const seconds = Math.floor((timeRemaining % 60000) / 1000);
-
-  document.getElementById("countdown-value-el").textContent =
-    days > 0 ? `${days}d ${hours}h ${minutes}m` : `${hours}h ${minutes}m ${seconds}s`;
 }
 
 updateBirthdayStats();
@@ -1041,9 +1407,13 @@ function typeNextCharacter() {
     document.getElementById("intro-subtitle-el").classList.add("show");
 
     setTimeout(() => {
+      document.getElementById("countdown-showcase-el").classList.add("show");
+    }, 180);
+
+    setTimeout(() => {
       document.getElementById("about-section-el").classList.add("show");
       document.getElementById("stats-row-el").classList.add("show");
-    }, 380);
+    }, 520);
   }, 320);
 }
 
@@ -1089,3 +1459,4 @@ function swapTheme() {
 </script>
 </body>
 </html>
+```
