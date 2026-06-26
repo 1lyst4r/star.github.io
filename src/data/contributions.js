@@ -32,7 +32,7 @@ export const birthdayCountdown = {
 
 export const contributionSection = {
   title: "Contributions",
-  subtitle: "Projects I've contributed to.",
+  subtitle: "",
   cards: [
     {
       name: "Hidden Project",
@@ -40,16 +40,14 @@ export const contributionSection = {
       role: "Coder",
       tags: ["Luau"],
       link: "https://www.roblox.com/",
-      warn: "a game",
-      thumb: "https://placehold.co/800x450/111111/ffffff?text=?"
+      warn: "a game"
     },
     {
       name: "soon",
       desc: "haven't contributed to anything else",
       role: "?",
       tags: ["?"],
-      link: "https://nohello.net",
-      thumb: "https://placehold.co/800x450/111111/ffffff?text=soon"
+      link: "https://nohello.net"
     }
   ]
 };

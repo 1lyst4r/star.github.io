@@ -9,7 +9,7 @@ export function ProjectSection({ section }) {
   return (
     <div className="projects-section">
       <div className="projects-section-title">{section.title}</div>
-      <div className="projects-section-subtitle">{section.subtitle}</div>
+      {section.subtitle && <div className="projects-section-subtitle">{section.subtitle}</div>}
       <div className="projects-grid">
         {section.cards.map((project) => (
           <ProjectCard project={project} key={project.name} />

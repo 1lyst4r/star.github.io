@@ -1,52 +1,45 @@
-import { GithubIcon, LinkIcon } from "./icons.jsx";
+import { GithubIcon, LinkIcon, StarIcon } from "./icons.jsx";
 import { WarningBadge } from "./WarningBadge.jsx";
 
 export function ProjectCard({ project }) {
   // Variables
-  const CardElement = project.link ? "a" : "div";
-  const cardProps = project.link
-    ? {
-        href: project.link,
-        target: "_blank",
-        rel: "noopener"
-      }
-    : {};
-
-  // Functions
-  const openGithub = (event) => {
-    event.preventDefault();
-    event.stopPropagation();
-    window.open(project.github, "_blank", "noopener");
-  };
+  const description = project.desc || project.description;
+  const stars = project.stars ?? project.starCount;
+  const hasStars = stars !== undefined && stars !== null;
 
   return (
-    <CardElement className="project-card" {...cardProps}>
-      {project.thumb && <img className="project-thumbnail" src={project.thumb} alt={`${project.name} thumbnail`} loading="lazy" />}
+    <article className="project-card">
       <div className="project-card-body">
         <div className="project-card-header">
           <div className="project-name-wrap">
             <span className="project-card-name">{project.name}</span>
+            {hasStars && (
+              <span className="project-stars" aria-label={`${stars} stars`}>
+                <StarIcon />
+                {stars}
+              </span>
+            )}
             <WarningBadge message={project.warn} />
           </div>
           <div className="project-card-icons">
             {project.github && (
-              <button className="project-icon-button" title="GitHub" onClick={openGithub} type="button">
+              <a className="project-icon-button" href={project.github} target="_blank" rel="noopener" title="GitHub" aria-label={`${project.name} GitHub`}>
                 <GithubIcon />
-              </button>
+              </a>
             )}
             {project.link && (
-              <span className="project-icon-button" style={{ cursor: "default" }}>
+              <a className="project-icon-button" href={project.link} target="_blank" rel="noopener" title="Open project" aria-label={`Open ${project.name}`}>
                 <LinkIcon />
-              </span>
+              </a>
             )}
           </div>
         </div>
-        {project.desc && <div className="project-card-description">{project.desc}</div>}
         {project.role && (
           <div className="project-card-role">
             <strong>Role:</strong> {project.role}
           </div>
         )}
+        {description && <div className="project-card-description">{description}</div>}
         {project.tags?.length > 0 && (
           <div className="project-tags-list">
             {project.tags.map((tag) => (
@@ -57,6 +50,6 @@ export function ProjectCard({ project }) {
           </div>
         )}
       </div>
-    </CardElement>
+    </article>
   );
 }
