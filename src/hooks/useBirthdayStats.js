@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { birthday, birthdayCountdownTarget } from "../data/profile.js";
 
+const KONAMI_SEQUENCE = ["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowUp", "ArrowRight"];
+
 function createBirthdayStats() {
   // Variables
   const now = new Date();
@@ -43,6 +45,7 @@ export function useBirthdayStats(onCelebrationStart) {
   const birthdayCelebrationStartedRef = useRef(false);
   const hideCountdownTimerRef = useRef(null);
   const birthdayButtonFrameRef = useRef(null);
+  const konamiProgressRef = useRef(0);
 
   // Functions
   const closeBirthdayMessage = useCallback(() => {
@@ -102,7 +105,39 @@ export function useBirthdayStats(onCelebrationStart) {
     updateBirthdayStats();
     const intervalId = window.setInterval(updateBirthdayStats, 1000);
 
+    const handleKeyDown = (event) => {
+      const expectedKey = KONAMI_SEQUENCE[konamiProgressRef.current];
+
+      if (event.key === expectedKey) {
+        konamiProgressRef.current += 1;
+
+        if (konamiProgressRef.current === KONAMI_SEQUENCE.length) {
+          event.preventDefault();
+          konamiProgressRef.current = 0;
+          setCountdown({
+            days: "0",
+            hours: "00",
+            minutes: "00",
+            seconds: "10"
+          });
+          startBirthdayCelebration();
+        }
+
+        return;
+      }
+
+      if (event.key === KONAMI_SEQUENCE[0]) {
+        konamiProgressRef.current = 1;
+        return;
+      }
+
+      konamiProgressRef.current = 0;
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+
     return () => {
+      window.removeEventListener("keydown", handleKeyDown);
       window.clearInterval(intervalId);
 
       if (hideCountdownTimerRef.current) {
@@ -113,7 +148,7 @@ export function useBirthdayStats(onCelebrationStart) {
         cancelAnimationFrame(birthdayButtonFrameRef.current);
       }
     };
-  }, [updateBirthdayStats]);
+  }, [startBirthdayCelebration, updateBirthdayStats]);
 
   return {
     age,
