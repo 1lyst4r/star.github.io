@@ -853,6 +853,7 @@ body {
   align-items: center;
   justify-content: center;
   color: #bbb;
+  text-decoration: none;
   position: relative;
   transition: background 0.3s var(--easing-standard), color 0.3s var(--easing-standard), transform 0.35s var(--easing-out), box-shadow 0.3s var(--easing-standard), opacity 0.35s var(--easing-standard);
 }

@@ -1,10 +1,10 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
-export function usePageTransition(initialPage) {
+export function usePageTransition(currentPage) {
   // Variables
-  const [selectedPage, setSelectedPage] = useState(initialPage);
-  const [activePage, setActivePage] = useState(initialPage);
+  const [activePage, setActivePage] = useState(currentPage);
   const [exitingPage, setExitingPage] = useState(null);
+  const currentPageRef = useRef(currentPage);
   const timersRef = useRef([]);
 
   // Functions
@@ -12,26 +12,6 @@ export function usePageTransition(initialPage) {
     timersRef.current.forEach((timerId) => window.clearTimeout(timerId));
     timersRef.current = [];
   }, []);
-
-  const switchPage = useCallback(
-    (nextPage) => {
-      if (nextPage === selectedPage) {
-        return;
-      }
-
-      const previousPage = activePage || selectedPage;
-      clearTimers();
-      setSelectedPage(nextPage);
-      setActivePage(null);
-      setExitingPage(previousPage);
-
-      timersRef.current = [
-        window.setTimeout(() => setActivePage(nextPage), 60),
-        window.setTimeout(() => setExitingPage(null), 620)
-      ];
-    },
-    [activePage, clearTimers, selectedPage]
-  );
 
   const getPageClassName = useCallback(
     (pageId) => {
@@ -46,11 +26,35 @@ export function usePageTransition(initialPage) {
     [activePage, exitingPage]
   );
 
+  const shouldRenderPage = useCallback(
+    (pageId) => {
+      return pageId === currentPage || pageId === activePage || pageId === exitingPage;
+    },
+    [activePage, currentPage, exitingPage]
+  );
+
+  useEffect(() => {
+    if (currentPage === currentPageRef.current) {
+      return;
+    }
+
+    const previousPage = currentPageRef.current;
+    currentPageRef.current = currentPage;
+
+    clearTimers();
+    setActivePage(null);
+    setExitingPage(previousPage);
+
+    timersRef.current = [
+      window.setTimeout(() => setActivePage(currentPage), 60),
+      window.setTimeout(() => setExitingPage(null), 620)
+    ];
+  }, [clearTimers, currentPage]);
+
   useEffect(() => clearTimers, [clearTimers]);
 
   return {
-    selectedPage,
-    switchPage,
-    getPageClassName
+    getPageClassName,
+    shouldRenderPage
   };
 }

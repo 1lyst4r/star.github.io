@@ -16,6 +16,29 @@ export const typingIntro = {
   startsAfter: 400
 };
 
+export const profile = {
+  displayName: "star",
+  introSubtitlePrefix: "My name is",
+  about: {
+    title: "About Me",
+    description: [
+      { text: "i'm a " },
+      { text: "15 year old dumbass", strong: true },
+      { text: " who makes things on the internet and gets demotivated after." }
+    ],
+    languages: [
+      {
+        code: "US",
+        label: "English"
+      },
+      {
+        code: "ES",
+        label: "Spanish"
+      }
+    ]
+  }
+};
+
 export const socialLinks = {
   discord: "https://discord.com/users/1143371202480590920",
   roblox: "https://www.roblox.com/users/449367437/profile?friendshipSourceType=PlayerSearch",

@@ -1,12 +1,18 @@
+import { NavLink } from "react-router-dom";
 import { socialLinks } from "../data/profile.js";
 import { BirthdayNoteIcon, BlogIcon, DiscordIcon, HomeIcon, ProjectsIcon } from "./icons.jsx";
 
 function openExternalUrl(url) {
   // Functions
-  window.open(url, "_blank");
+  window.open(url, "_blank", "noopener");
 }
 
-export function DockNav({ selectedPage, onSwitchPage, birthdayNoteAvailable, birthdayNoteVisible, onOpenBirthdayMessage }) {
+function getDockLinkClassName({ isActive }) {
+  // Functions
+  return `dock-button${isActive ? " active" : ""}`;
+}
+
+export function DockNav({ birthdayNoteAvailable, birthdayNoteVisible, onOpenBirthdayMessage }) {
   // Variables
   const birthdayButtonClassName = `dock-button birthday-note-button${birthdayNoteVisible ? " is-visible" : ""}`;
   const birthdayButtonStyle = birthdayNoteAvailable ? { display: "flex" } : undefined;
@@ -16,24 +22,25 @@ export function DockNav({ selectedPage, onSwitchPage, birthdayNoteAvailable, bir
   // Functions
   return (
     <nav className="dock-nav">
-      <button
-        className={`dock-button${selectedPage === "home-page" ? " active" : ""}`}
+      <NavLink
+        aria-label="Home"
+        className={getDockLinkClassName}
+        end
         id="btn-home-page"
-        onClick={() => onSwitchPage("home-page")}
         title="Home"
-        type="button"
+        to="/"
       >
         <HomeIcon />
-      </button>
-      <button
-        className={`dock-button${selectedPage === "projects-page" ? " active" : ""}`}
+      </NavLink>
+      <NavLink
+        aria-label="Projects"
+        className={getDockLinkClassName}
         id="btn-projects-page"
-        onClick={() => onSwitchPage("projects-page")}
         title="Projects"
-        type="button"
+        to="/projects"
       >
         <ProjectsIcon />
-      </button>
+      </NavLink>
       <button
         className={birthdayButtonClassName}
         id="birthday-note-button"

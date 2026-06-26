@@ -1,8 +1,13 @@
 // Variables
+export const projectsPageContent = {
+  title: "Projects",
+  description: "A collection of things I've built."
+};
+
 export const projectSections = [
   {
     title: "Development",
-    sub: "Stuff I've made.",
+    subtitle: "Stuff I've made.",
     cards: [
       {
         name: "star's bot",
@@ -17,29 +22,6 @@ export const projectSections = [
         tags: ["Discord Bot", "JavaScript"],
         link: "https://discord.com/users/1507513951708254268",
         thumb: "https://i.imgur.com/HBZExRo.png"
-      }
-    ]
-  },
-  {
-    title: "Contributions",
-    sub: "Projects I've contributed to.",
-    cards: [
-      {
-        name: "Hidden Project",
-        desc: " ",
-        role: "Coder",
-        tags: ["Luau"],
-        link: "https://www.roblox.com/",
-        warn: "a game",
-        thumb: "https://placehold.co/800x450/111111/ffffff?text=?"
-      },
-      {
-        name: "soon",
-        desc: "haven't contributed to anything else",
-        role: "?",
-        tags: ["?"],
-        link: "https://nohello.net",
-        thumb: "https://placehold.co/800x450/111111/ffffff?text=soon"
       }
     ]
   }
